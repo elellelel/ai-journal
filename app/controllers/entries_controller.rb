@@ -2,7 +2,7 @@ class EntriesController < ApplicationController
   before_action :set_entry, only: [:show, :edit, :update, :destroy]
 
   def index
-    @entries = Entry.all
+    @entries = current_user.entries
   end
 
   # GET /entries/:id
@@ -11,12 +11,12 @@ class EntriesController < ApplicationController
 
   # GET /entries/new
   def new
-    @entry = Entry.new
+    @entry = current_user.entries.new
   end
 
   # POST /entries
   def create
-    @entry = Entry.new(entry_params)
+    @entry = current_user.entries.new(entry_params)
 
     if params[:generate_ai_response]
       response = OpenaiService.generate_response(entry_params[:content])

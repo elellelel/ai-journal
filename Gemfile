@@ -48,6 +48,7 @@ gem "bootstrap", "~> 5.3.3"
 gem "devise"
 gem "ruby-openai"
 gem "dotenv-rails"
+
 gem "rails_12factor", group: :production
 gem 'pg', group: :production
 
