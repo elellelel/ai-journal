@@ -2,6 +2,8 @@
 
 <p><%= @entry.content %></p>
 
+<p>Linked Entries: <%= @entry.linked_entry_ids.map(&:to_s) %></p>
+
 <% if @entry.ai_response.present? %>
 	<h1>AI Response:</h1>
 

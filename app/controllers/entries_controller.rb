@@ -12,20 +12,29 @@ class EntriesController < ApplicationController
   # GET /entries/new
   def new
     @entry = current_user.entries.new
+    @existing_entries = Entry.all
   end
 
   # POST /entries
   def create
     @entry = current_user.entries.new(entry_params)
 
+    if params[:entry][:linked_entry_ids]
+      @entry.linked_entry_ids = params[:entry][:linked_entry_ids].reject(&:blank?).map(&:to_i)
+    end
+
     if params[:generate_ai_response]
-      response = OpenaiService.generate_response(entry_params[:content])
+      # generate content from all included entries
+      # lol just feed it all in as one big string this is a great idea
+      content = current_user.entries.where(id: @entry.linked_entry_ids).map(&:content).join(" ")
+      response = OpenaiService.generate_response(entry_params[:content] + content)
       @entry.ai_response = AiResponse.new(content: response)
     end
 
     if @entry.save
       redirect_to @entry, notice: 'Entry was successfully created.'
     else
+      @existing_entries = Entry.all
       render :new
     end
   end

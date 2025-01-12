@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_12_145925) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_12_170615) do
   create_table "ai_responses", force: :cascade do |t|
     t.text "content"
     t.integer "entry_id", null: false
@@ -25,7 +25,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_12_145925) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.json "linked_entry_ids", default: [], null: false
     t.index ["user_id"], name: "index_entries_on_user_id"
+  end
+
+  create_table "entry_links", force: :cascade do |t|
+    t.integer "entry_id", null: false
+    t.integer "linked_entry_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_entry_links_on_entry_id"
+    t.index ["linked_entry_id"], name: "index_entry_links_on_linked_entry_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -42,4 +52,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_12_145925) do
 
   add_foreign_key "ai_responses", "entries"
   add_foreign_key "entries", "users"
+  add_foreign_key "entry_links", "entries"
+  add_foreign_key "entry_links", "linked_entries"
 end
