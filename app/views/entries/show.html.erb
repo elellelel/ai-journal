@@ -1,0 +1,12 @@
+<h1><%= @entry.title %></h1>
+
+<p><%= @entry.content %></p>
+
+<% if @entry.ai_response.present? %>
+	<h1>AI Response:</h1>
+
+	<p><%= @entry.ai_response.content %></p>
+<% end %>
+
+<%= link_to 'Edit', edit_entry_path(@entry) %> |
+<%= link_to 'Back', root_path %>
