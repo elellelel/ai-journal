@@ -1,4 +1,8 @@
 {
+  "engines": {
+    "node": "17.9.1",
+    "yarn": "1.22.22"
+  }
   "dependencies": {
     "@rails/webpacker": "5.4.4",
     "@vue/compiler-sfc": "^3.5.13",
@@ -15,8 +19,5 @@
     "babel-loader": "^8.0.0",
     "webpack-dev-server": "^3",
     "yarn": "^1.22.22"
-  },
-  "scripts": {
-    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
   }
 }
