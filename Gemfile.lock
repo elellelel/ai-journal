@@ -477,7 +477,6 @@ DEPENDENCIES
   stimulus-rails
   thruster
   turbo-rails
-  tzinfo-data
   web-console
   webpacker (~> 5.4)
 
