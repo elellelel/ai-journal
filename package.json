@@ -4,8 +4,8 @@
     "yarn": "1.x"
   },
   "scripts": {
-    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack",
-    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve"
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve --mode development"
   },
   "dependencies": {
     "@rails/webpacker": "5.4.4",
