@@ -6,6 +6,9 @@ import "bootstrap"
 
 import "controllers"
 
+import "trix"
+import "@rails/actiontext"
+
 document.addEventListener("DOMContentLoaded", () => {
   const chatForm = document.getElementById("chat-form");
   const chatInput = document.getElementById("chat-input");
@@ -40,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Display AI response
         const aiMessageDiv = document.createElement("div");
         aiMessageDiv.className = "ai-message mb-2";
-        aiMessageDiv.textContent = `AI: ${data.message}`;
+        aiMessageDiv.innerHTML = `AI: ${data.message}`;
         chatBox.appendChild(aiMessageDiv);
 
         // Scroll to the bottom
@@ -49,5 +52,3 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch((error) => console.error("Error:", error));
   });
 });
-import "trix"
-import "@rails/actiontext"

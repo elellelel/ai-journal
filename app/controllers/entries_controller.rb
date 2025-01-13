@@ -28,6 +28,11 @@ class EntriesController < ApplicationController
       # lol just feed it all in as one big string this is a great idea
       content = current_user.entries.where(id: @entry.linked_entry_ids).map(&:content).join(" ")
       response = OpenaiService.generate_response(entry_params[:content] + content)
+      
+
+      paragraphs = response.split("\n").reject(&:blank?)
+      response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
+
       @entry.ai_response = AiResponse.new(content: response)
     end
 
