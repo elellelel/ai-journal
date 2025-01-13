@@ -10,4 +10,12 @@ environment.loaders.prepend('vue', {
     }]
 })
 
+environment.loaders.append('babel', {
+  test: /\.js$/,
+  exclude: /node_modules/,
+  use: {
+    loader: 'babel-loader',
+  },
+});
+
 module.exports = environment
