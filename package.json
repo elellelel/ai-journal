@@ -14,5 +14,8 @@
     "@babel/preset-env": "^7.26.0",
     "babel-loader": "^8.0.0",
     "webpack-dev-server": "^3"
+  },
+  "scripts": {
+    "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
   }
 }
