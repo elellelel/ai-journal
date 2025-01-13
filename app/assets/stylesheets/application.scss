@@ -1,3 +1,23 @@
 // Sassy
 @import "bootstrap";
 @import "theme.scss";
+
+.chat-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.user-message {
+  text-align: right;
+  background-color: #d1ecf1;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.ai-message {
+  text-align: left;
+  background-color: #f8d7da;
+  padding: 10px;
+  border-radius: 5px;
+}
