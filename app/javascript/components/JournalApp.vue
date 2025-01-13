@@ -1,5 +1,6 @@
 <template>
   <div>
+    JournalApp Component
   </div>
 </template>
 

@@ -28,8 +28,13 @@
     <div class="container">
       <p class="notice"><%= notice %></p>
       <p class="alert"><%= alert %></p>
-      <div id="vue-app"></div>
+
       <%= yield %>
+
+      <div class="container">
+        <div id="journal-app" data-component="JournalApp"></div>
+        <div id="another-component" data-component="AnotherComponent"></div>
+      </div>
     </div>
   </body>
 </html>
