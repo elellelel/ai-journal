@@ -49,3 +49,5 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch((error) => console.error("Error:", error));
   });
 });
+import "trix"
+import "@rails/actiontext"
