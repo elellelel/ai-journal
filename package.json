@@ -13,7 +13,8 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.26.0",
     "babel-loader": "^8.0.0",
-    "webpack-dev-server": "^3"
+    "webpack-dev-server": "^3",
+    "yarn": "^1.22.22"
   },
   "scripts": {
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack"
