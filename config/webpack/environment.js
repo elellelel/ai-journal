@@ -3,14 +3,11 @@ const { VueLoaderPlugin } = require('vue-loader')
 const vue = require('./loaders/vue')
 
 environment.plugins.prepend('VueLoaderPlugin', new VueLoaderPlugin())
-environment.loaders.prepend('vue', vue)
-
-environment.config.merge({
-  resolve: {
-    alias: {
-      vue$: 'vue/dist/vue.esm-bundler.js'
-    }
-  }
+environment.loaders.prepend('vue', {
+    test: /\.vue$/,
+    use: [{
+        loader: 'vue-loader'
+    }]
 })
 
 module.exports = environment
