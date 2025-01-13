@@ -3,6 +3,7 @@ class EntriesController < ApplicationController
 
   def index
     @entries = current_user.entries
+    @serialized_entries = ActiveModelSerializers::SerializableResource.new(@entries).as_json
   end
 
   # GET /entries/:id
@@ -12,7 +13,7 @@ class EntriesController < ApplicationController
   # GET /entries/new
   def new
     @entry = current_user.entries.new
-    @existing_entries = Entry.all
+    @existing_entries = current_user.entries
   end
 
   # POST /entries

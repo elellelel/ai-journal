@@ -45,6 +45,7 @@ gem "bootstrap", "~> 5.3.3"
 gem "devise"
 gem "ruby-openai"
 gem "dotenv-rails"
+gem 'active_model_serializers', '~> 0.10.0'
 
 gem "rails_12factor", group: :production
 gem 'pg', group: :production
