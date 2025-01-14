@@ -38,9 +38,8 @@ class EntriesController < ApplicationController
 
     if params[:generate_ai_response]
       # generate content from all included entries
-      # lol just feed it all in as one big string this is a great idea
-      content = current_user.entries.where(id: @entry.linked_entry_ids).map(&:content).join(" ")
-      response = OpenaiService.generate_response(entry_params[:content] + content)
+      content = EntryFeedCreator.new(current_user.entries).create_feed
+      response = OpenaiService.generate_response(content)
       
 
       paragraphs = response.split("\n").reject(&:blank?)
