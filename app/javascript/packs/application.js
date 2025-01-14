@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import { createApp, reactive } from "vue";
 import InteractiveChat from "../components/InteractiveChat.vue";
 import EntriesTable from "../components/EntriesTable.vue";
 
@@ -14,27 +14,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (Component) {
       const props = el.getAttribute("data-props");
-      let parsedProps = [];
+      let parsedProps = {};
       try {
-        parsedProps = props ? JSON.parse(props) : [];
+        parsedProps = props ? JSON.parse(props) : {};
       } catch (error) {
-        console.error("Failed to parse data-props:", error);
+        console.error(`Failed to parse props for ${componentName}:`, error);
       }
 
-      const app = createApp(Component, props ? JSON.parse(props) : {});
+      const reactiveProps = reactive(parsedProps);
 
-      if (componentName === "EntriesTable") {
-        app.config.globalProperties.$on = (event, callback) => {
-          if (event === "entry-deleted") {
-            const deletedId = callback.id;
-            const entries = JSON.parse(props);
-            el.setAttribute(
-              "data-props",
-              JSON.stringify(entries.filter((entry) => entry.id !== deletedId))
-            );
+      const app = createApp({
+        components: components, // Explicitly register component
+        template: `<EntriesTable v-model="entries" :user-id="userId" />`, // Use v-model binding
+        setup() {
+          if (!reactiveProps.userId) {
+            debugger;
           }
-        };
-      }
+          return {
+            entries: reactiveProps.entries || [],
+            userId: reactiveProps.userId || 0
+          };
+        },
+      });
 
       app.mount(el);
     }

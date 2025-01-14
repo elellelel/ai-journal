@@ -19,3 +19,17 @@
   padding: 10px;
   border-radius: 5px;
 }
+
+.entries-container {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.loading-indicator {
+  text-align: center;
+  margin-top: 10px;
+  font-style: italic;
+}

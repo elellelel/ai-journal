@@ -1,4 +1,23 @@
 const { environment } = require('@rails/webpacker')
+const webpack = require('webpack');
+
+// Access the resolve.alias property safely
+environment.config.merge({
+  resolve: {
+    alias: {
+      vue$: 'vue/dist/vue.esm-bundler.js', // Ensure runtime template compilation
+    },
+  },
+});
+
+// Add feature flags for Vue
+environment.plugins.append(
+  'Provide',
+  new webpack.DefinePlugin({
+    __VUE_OPTIONS_API__: true,
+    __VUE_PROD_DEVTOOLS__: false,
+  })
+);
 
 const { VueLoaderPlugin } = require('vue-loader')
 const vue = require('./loaders/vue')

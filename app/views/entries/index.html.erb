@@ -8,7 +8,7 @@
   <div 
     class="col-sm-3" 
     data-component="EntriesTable" 
-    data-props="<%= json_escape({entries: @serialized_entries }.to_json) %>">
+    data-props="<%= json_escape({ entries: @serialized_entries, userId: current_user.id }.to_json) %>">
   </div>
 
   <div class="col-sm-9">
