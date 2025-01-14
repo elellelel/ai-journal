@@ -64,7 +64,7 @@ export default {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
         },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ message: userMessage, linkedEntryIds: this.sharedState.linkedEntryIds }),
       })
         .then((response) => response.json())
         .then((data) => {
