@@ -7,9 +7,7 @@ const components = {
   EntriesTable,
 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  const currentUser = window.currentUser; // Fetch the user ID from the global scope
-  
+function initializeVueComponents() {  
   document.querySelectorAll("[data-component]").forEach((el) => {
     const componentName = el.getAttribute("data-component");
     const Component = components[componentName];
@@ -43,4 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
       app.mount(el);
     }
   });
-});
+};
+
+document.addEventListener("turbo:load", initializeVueComponents); // For Turbo Drive
+document.addEventListener("DOMContentLoaded", initializeVueComponents); // Fallback for full page loads

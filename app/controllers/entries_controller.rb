@@ -50,7 +50,7 @@ class EntriesController < ApplicationController
     end
 
     if @entry.save
-      redirect_to @entry, notice: 'Entry was successfully created.'
+      redirect_to user_entry_path(current_user, @entry), notice: 'Entry was successfully created.'
     else
       @existing_entries = Entry.all
       render :new

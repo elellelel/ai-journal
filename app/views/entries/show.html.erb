@@ -10,5 +10,5 @@
 	<p><%= @entry.ai_response.content.html_safe %></p>
 <% end %>
 
-<%= link_to 'Edit', edit_entry_path(@entry) %> |
+<%= link_to 'Edit', edit_user_entry_path(current_user, @entry) %> |
 <%= link_to 'Back', root_path %>
