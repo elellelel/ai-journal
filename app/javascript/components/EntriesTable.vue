@@ -6,6 +6,14 @@
       style="height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"
     >
       <table class="table table-striped table-hover" v-if="entries.length">
+        <thead>
+          <tr>
+            <td>
+              <input type="checkbox" @change="handleSelectAll" />
+            </td>
+            <td>Select All</td>
+          </tr>
+        </thead>
         <tbody>
           <tr v-for="entry in entries" :key="entry.id">
             <td>
@@ -103,10 +111,12 @@ export default {
         }
       }
     }, 300), // Debounce the scroll handler to optimize performance
+    handleSelectAll() {
+      console.log('hello');
+    },
   },
   mounted() {
     // Initial load
-    console.log("EntriesTable SharedState MOUNTED: " + this.sharedState);
     this.fetchEntries(this.currentPage);
   },
 };

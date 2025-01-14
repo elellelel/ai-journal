@@ -80,7 +80,6 @@ export default {
     },
   },
   mounted() {
-    console.log("sharedState InteractiveChat MOUNTED: " + this.sharedState)
     // Scroll to the bottom when the component is mounted
     this.scrollToBottom();
   },
