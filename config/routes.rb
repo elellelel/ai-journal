@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :entries
-  root 'entries#index'
+  root 'home#index'
 
+  resources :users, only: [:show] do
+    resources :entries  
+  end
+  
   resources :chats, only: [:create]
 end

@@ -30,11 +30,7 @@ export default {
     modelValue: {
       type: Array,
       required: true,
-    },
-    userId: {
-      type: Number,
-      required: true, // Ensure the user ID is provided
-    },
+    }
   },
   emits: ["update:modelValue"],
   data() {
@@ -58,9 +54,8 @@ export default {
     async fetchEntries(page) {
       try {
         this.isLoading = true;
-        console.log(`Fetching page ${page} for user ${this.userId}...`); // Debugging log
 
-        const response = await fetch(`/entries?page=${page}&user_id=${this.userId}`, {
+        const response = await fetch(`users/${window.currentUser}/entries?page=${page}`, {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json", // Ensure JSON response
@@ -72,7 +67,6 @@ export default {
         }
 
         const data = await response.json();
-        console.log("Fetched data:", data); // Debugging log
 
         if (data.entries && data.entries.length) {
           this.entries = [...this.entries, ...data.entries]; // Append new entries
@@ -98,7 +92,6 @@ export default {
     }, 300), // Debounce the scroll handler to optimize performance
   },
   mounted() {
-    console.log("FROM MOUNTED: User ID in EntriesTable:", this.userId); // Debugging log
     // Initial load
     this.fetchEntries(this.currentPage);
   },

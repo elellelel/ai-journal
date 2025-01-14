@@ -32,5 +32,9 @@
       <%= yield %>
 
     </div>
+
+    <script>
+      window.currentUser = <%= current_user.id.to_json %>;
+    </script>
   </body>
 </html>

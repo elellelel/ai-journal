@@ -8,6 +8,8 @@ const components = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  const currentUser = window.currentUser; // Fetch the user ID from the global scope
+  
   document.querySelectorAll("[data-component]").forEach((el) => {
     const componentName = el.getAttribute("data-component");
     const Component = components[componentName];
@@ -25,14 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const app = createApp({
         components: components, // Explicitly register component
-        template: `<EntriesTable v-model="entries" :user-id="userId" />`, // Use v-model binding
+        template: `<EntriesTable v-model="entries" />`, // Use v-model binding
         setup() {
-          if (!reactiveProps.userId) {
-            debugger;
-          }
           return {
             entries: reactiveProps.entries || [],
-            userId: reactiveProps.userId || 0
           };
         },
       });

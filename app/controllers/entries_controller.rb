@@ -1,24 +1,6 @@
 class EntriesController < ApplicationController
   before_action :set_entry, only: [:show, :edit, :update, :destroy]
 
-def index
-  user = User.find(params[:user_id]) if params[:user_id]
-  user ||= current_user # Fallback to current_user if no user_id is passed
-
-  @entries = user.entries.page(params[:page]).per(10)
-
-  respond_to do |format|
-    format.json {
-      render json: {
-        entries: ActiveModelSerializers::SerializableResource.new(@entries),
-        total_pages: @entries.total_pages
-      }
-    }
-    format.html { render :index }
-  end
-end
-
-
   def index
     user = User.find(params[:user_id]) if params[:user_id]
     user ||= current_user # Fallback to current_user if no user_id is passed
