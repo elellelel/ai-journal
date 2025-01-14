@@ -24,16 +24,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const reactiveProps = reactive(parsedProps);
+      let app = {};
 
-      const app = createApp({
-        components: components, // Explicitly register component
-        template: `<EntriesTable v-model="entries" />`, // Use v-model binding
-        setup() {
-          return {
-            entries: reactiveProps.entries || [],
-          };
-        },
-      });
+      if (componentName == 'EntriesTable') {
+        app = createApp({
+          components: components, // Explicitly register component
+          template: `<EntriesTable v-model="entries" />`, // Use v-model binding
+          setup() {
+            return {
+              entries: reactiveProps.entries || [],
+            };
+          },
+        });
+      } else {
+        app = createApp(Component, reactiveProps)
+      }
 
       app.mount(el);
     }
