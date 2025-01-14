@@ -9,6 +9,9 @@
         <tbody>
           <tr v-for="entry in entries" :key="entry.id">
             <td>
+              <input type="checkbox" :value="entry.id" class="entry-checkbox" v-model="linkedEntryIds" />
+            </td>
+            <td>
               <a :href="entry.url" class="text-decoration-none">{{ entry.title }}</a>
             </td>
           </tr>
@@ -30,6 +33,10 @@ export default {
     modelValue: {
       type: Array,
       required: true,
+    },
+    sharedState: {
+      type: Object,
+      required: true
     }
   },
   emits: ["update:modelValue"],
@@ -38,6 +45,7 @@ export default {
       isLoading: false,
       currentPage: 1, // Tracks the current page for pagination
       hasMoreEntries: true, // Indicates if there are more entries to load
+      linkedEntryIds: [],
     };
   },
   computed: {
@@ -48,6 +56,11 @@ export default {
       set(value) {
         this.$emit("update:modelValue", value);
       },
+    },
+  },
+  watch: {
+    linkedEntryIds(newVal) {
+      this.sharedState.linkedEntryIds = newVal;
     },
   },
   methods: {
@@ -93,6 +106,7 @@ export default {
   },
   mounted() {
     // Initial load
+    console.log("EntriesTable SharedState MOUNTED: " + this.sharedState);
     this.fetchEntries(this.currentPage);
   },
 };

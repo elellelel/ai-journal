@@ -1,4 +1,5 @@
-import { createApp, reactive } from "vue";
+import { createApp, reactive, h } from "vue";
+
 import InteractiveChat from "../components/InteractiveChat.vue";
 import EntriesTable from "../components/EntriesTable.vue";
 
@@ -6,6 +7,10 @@ const components = {
   InteractiveChat,
   EntriesTable,
 };
+
+const sharedState = reactive({
+  linkedEntryIds: []
+});
 
 function initializeVueComponents() {  
   document.querySelectorAll("[data-component]").forEach((el) => {
@@ -27,15 +32,26 @@ function initializeVueComponents() {
       if (componentName == 'EntriesTable') {
         app = createApp({
           components: components, // Explicitly register component
-          template: `<EntriesTable v-model="entries" />`, // Use v-model binding
+          template: `<EntriesTable v-model="entries" :shared-state="sharedState"/>`, // Why won't :is=> work here?
           setup() {
             return {
+              sharedState,
               entries: reactiveProps.entries || [],
             };
           },
         });
       } else {
-        app = createApp(Component, reactiveProps)
+        app = createApp({
+          setup() {
+            return {
+              sharedState,
+              props: reactive(parsedProps),
+            };
+          },
+          render() {
+            return h(Component, { ...this.props, sharedState });
+          },
+        });
       }
 
       app.mount(el);

@@ -30,11 +30,22 @@
 
 <script>
 export default {
+  props: {
+    sharedState: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
       chatInput: "", // To bind the input value
       messages: [], // To store chat messages
     };
+  },
+  computed: {
+    linkedEntryIds() {
+      return this.sharedState.linkedEntryIds;
+    }
   },
   methods: {
     sendMessage() {
@@ -69,6 +80,7 @@ export default {
     },
   },
   mounted() {
+    console.log("sharedState InteractiveChat MOUNTED: " + this.sharedState)
     // Scroll to the bottom when the component is mounted
     this.scrollToBottom();
   },
