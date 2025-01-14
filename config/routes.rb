@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :users, only: [:show] do
     resources :entries  
+    resources :entry_ids, only: [:index]
   end
   
   resources :chats, only: [:create]

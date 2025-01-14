@@ -1,23 +1,33 @@
 <template>
   <div>
+    <!-- Select All Checkbox -->
+    <div>
+      <label>
+        <input
+          type="checkbox"
+          :checked="allSelected"
+          @change="toggleSelectAll"
+        />
+        Select All
+      </label>
+    </div>
+
+    <!-- Entries Table -->
     <div
       class="entries-container"
       @scroll.prevent="handleScroll"
       style="height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"
     >
       <table class="table table-striped table-hover" v-if="entries.length">
-        <thead>
-          <tr>
-            <td>
-              <input type="checkbox" @change="handleSelectAll" />
-            </td>
-            <td>Select All</td>
-          </tr>
-        </thead>
         <tbody>
           <tr v-for="entry in entries" :key="entry.id">
             <td>
-              <input type="checkbox" :value="entry.id" class="entry-checkbox" v-model="linkedEntryIds" />
+              <input
+                type="checkbox"
+                :value="entry.id"
+                class="entry-checkbox"
+                v-model="linkedEntryIds"
+              />
             </td>
             <td>
               <a :href="entry.url" class="text-decoration-none">{{ entry.title }}</a>
@@ -27,11 +37,14 @@
       </table>
       <div v-else>No entries found.</div>
     </div>
+
+    <!-- Loading Indicator -->
     <div v-if="isLoading" class="loading-indicator">
       <p>Loading more entries...</p>
     </div>
   </div>
 </template>
+
 
 <script>
 import debounce from "lodash.debounce";
@@ -44,16 +57,17 @@ export default {
     },
     sharedState: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   emits: ["update:modelValue"],
   data() {
     return {
       isLoading: false,
-      currentPage: 1, // Tracks the current page for pagination
-      hasMoreEntries: true, // Indicates if there are more entries to load
+      currentPage: 1,
+      hasMoreEntries: true,
       linkedEntryIds: [],
+      allEntryIds: [], // Store all entry IDs
     };
   },
   computed: {
@@ -65,10 +79,17 @@ export default {
         this.$emit("update:modelValue", value);
       },
     },
+    allSelected() {
+      // Check if all entries are selected
+      return (
+        this.allEntryIds.length > 0 &&
+        this.linkedEntryIds.length === this.allEntryIds.length
+      );
+    },
   },
   watch: {
     linkedEntryIds(newVal) {
-      this.sharedState.linkedEntryIds = newVal;
+      this.sharedState.linkedEntryIds = newVal; // Sync with shared state
     },
   },
   methods: {
@@ -79,7 +100,7 @@ export default {
         const response = await fetch(`users/${window.currentUser}/entries?page=${page}`, {
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json", // Ensure JSON response
+            Accept: "application/json",
           },
         });
 
@@ -101,24 +122,47 @@ export default {
         this.isLoading = false;
       }
     },
+    async fetchAllEntryIds() {
+      try {
+        const response = await fetch(`users/${window.currentUser}/entry_ids`, {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch all entry IDs: ${response.status}`);
+        }
+
+        const data = await response.json();
+        this.allEntryIds = data.entry_ids; // Store all entry IDs
+      } catch (error) {
+        console.error("Error fetching all entry IDs:", error);
+      }
+    },
+    toggleSelectAll() {
+      if (this.allSelected) {
+        this.linkedEntryIds = []; // Deselect all
+      } else {
+        this.linkedEntryIds = [...this.allEntryIds]; // Select all
+      }
+    },
     handleScroll: debounce(function (event) {
       const container = event.target;
 
-      // Check if user has scrolled to the bottom of the container
       if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
         if (!this.isLoading && this.hasMoreEntries) {
-          this.fetchEntries(this.currentPage + 1); // Request the next page
+          this.fetchEntries(this.currentPage + 1);
         }
       }
-    }, 300), // Debounce the scroll handler to optimize performance
-    handleSelectAll() {
-      console.log('hello');
-    },
+    }, 300),
   },
-  mounted() {
-    // Initial load
-    this.fetchEntries(this.currentPage);
+  async mounted() {
+    await this.fetchEntries(this.currentPage); // Load initial entries
+    await this.fetchAllEntryIds(); // Fetch all entry IDs
   },
 };
+
 </script>
 
