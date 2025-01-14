@@ -35,7 +35,7 @@
     </div>
 
     <script>
-      window.currentUser = <%= current_user.id.to_json %>;
+      window.currentUser = <%= current_user.id.to_json if current_user %>;
     </script>
   </body>
 </html>
