@@ -12,56 +12,70 @@ const components = {
   WritingCenter,
 };
 
-const sharedState = reactive({
-  linkedEntryIds: []
-});
-
 function initializeVueComponents() {  
   document.querySelectorAll("[data-component]").forEach((el) => {
     const componentName = el.getAttribute("data-component");
     const Component = components[componentName];
 
     if (Component) {
-      const props = el.getAttribute("data-props");
-      let parsedProps = {};
-      try {
-        parsedProps = props ? JSON.parse(props) : {};
-      } catch (error) {
-        console.error(`Failed to parse props for ${componentName}:`, error);
-      }
+      const reactiveProps = parseProps(el.getAttribute("data-props"));
+      let app;
 
-      const reactiveProps = reactive(parsedProps);
-      let app = {};
-
-      if (componentName == 'EntriesTable') {
-        app = createApp({
-          components: components, // Explicitly register component
-          template: `<EntriesTable v-model="entries" :shared-state="sharedState"/>`, // Why won't :is=> work here?
-          setup() {
-            return {
-              sharedState,
-              entries: reactiveProps.entries || [],
-            };
-          },
-        });
-      } else {
-        app = createApp({
-          setup() {
-            return {
-              sharedState,
-              props: reactive(parsedProps),
-            };
-          },
-          render() {
-            return h(Component, { ...this.props, sharedState });
-          },
-        });
+      switch (componentName) {
+        case 'EntriesTable':
+          app = createEntriesTable(reactiveProps);
+          break;
+        default:
+          app = createDefaultComponent(Component, reactiveProps);
+          break;
       }
 
       app.mount(el);
     }
   });
 };
+
+const sharedState = reactive({
+  linkedEntryIds: []
+});
+
+function parseProps(props) {
+  let parsedProps = {};
+  try {
+    parsedProps = props ? JSON.parse(props) : {};
+  } catch (error) {
+    console.error(`Failed to parse props for ${componentName}:`, error);
+  }
+
+  return reactive(parsedProps);
+}
+
+function createDefaultComponent(component, reactiveProps) {
+  return createApp({
+    setup() {
+      return {
+        sharedState,
+        props: reactiveProps,
+      };
+    },
+    render() {
+      return h(component, { ...this.props, sharedState });
+    },
+  });
+}
+
+function createEntriesTable(reactiveProps) {
+  return createApp({
+    components: components, // Explicitly register component
+    template: `<EntriesTable v-model="entries" :shared-state="sharedState"/>`, // Why won't :is=> work here?
+    setup() {
+      return {
+        sharedState,
+        entries: reactiveProps.entries || [],
+      };
+    },
+  });
+}
 
 document.addEventListener("turbo:load", initializeVueComponents); // For Turbo Drive
 document.addEventListener("DOMContentLoaded", initializeVueComponents); // Fallback for full page loads
