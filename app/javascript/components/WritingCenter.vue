@@ -33,22 +33,32 @@ const submitForm = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json', // Explicitly set Accept header
         'X-CSRF-Token': document.querySelector("[name='csrf-token']").content,
       },
       body: JSON.stringify({ entry: formData }),
     });
+
 
     if (!response.ok) {
       const data = await response.json();
       throw data.errors || ['An unexpected error occurred.'];
     }
 
-    alert('Entry saved successfully!');
-    // Optionally reset form or redirect
+    const data = await response.json(); // Parse the response
+
+    if (data.entry && data.entry.id) {
+      const entryId = data.entry.id;
+      // Redirect to the created entry's page
+      window.location.href = `/users/${window.currentUser}/entries/${entryId}`;
+    } else {
+      throw ['Failed to retrieve the entry details for redirection.'];
+    }
   } catch (error) {
     errors.value = error;
   }
 };
+
 
 const toggleAllSelections = (event) => {
   if (event.target.checked) {
@@ -98,32 +108,6 @@ const toggleAllSelections = (event) => {
         </label>
       </div>
     </div>
-
-    <!-- Link Existing Entries -->
-    <h3>Link Existing Entries</h3>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>
-            <input type="checkbox" id="selectAll" @change="toggleAllSelections" />
-          </th>
-          <th>Title</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="entry in props.existingEntries" :key="entry.id">
-          <td>
-            <input
-              type="checkbox"
-              :value="entry.id"
-              class="entry-checkbox"
-              v-model="formData.linked_entry_ids"
-            />
-          </td>
-          <td>{{ entry.title }}</td>
-        </tr>
-      </tbody>
-    </table>
 
     <!-- Submit Button -->
     <div class="mb-3">

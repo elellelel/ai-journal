@@ -7,7 +7,7 @@ const props = defineProps({
   modelValue: String, // Prop for v-model binding
 });
 
-defineEmits(['update:modelValue']); // Emit for v-model updates
+const emit = defineEmits(['update:modelValue']); // Emit for v-model updates
 
 // Local state for the editor content
 const content = ref(props.modelValue); // Initialize with modelValue
