@@ -104,6 +104,9 @@ export default {
           },
         });
 
+
+        console.log(response.ok);
+
         if (!response.ok) {
           throw new Error(`Failed to fetch entries: ${response.status}`);
         }
