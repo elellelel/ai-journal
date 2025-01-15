@@ -5,7 +5,6 @@ class OpenaiService
       parameters: {
         model: "gpt-4",
         messages: [
-          { role: "system", content: "You are a journaling assistant. Please ignore HTML and developer cruft in the content you receive." },
           { role: "user", content: prompt }
         ]
       }
