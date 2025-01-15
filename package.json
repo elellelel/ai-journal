@@ -4,6 +4,7 @@
     "yarn": "1.x"
   },
   "scripts": {
+    "test": "vitest",
     "build": "NODE_OPTIONS=--openssl-legacy-provider webpack --mode production",
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve --mode development"
   },
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
     "babel-loader": "8",
+    "vitest": "^2.1.8",
     "webpack": "4.47.0",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "^3",
