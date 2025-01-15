@@ -2,13 +2,11 @@ import { createApp, reactive, h } from "vue";
 
 import InteractiveChat from "../components/InteractiveChat.vue";
 import EntriesTable from "../components/EntriesTable.vue";
-import TinyMCEEditor from "../components/TinyMCEEditor.vue";
 import WritingCenter from "../components/WritingCenter.vue";
 
 const components = {
   InteractiveChat,
   EntriesTable,
-  TinyMCEEditor,
   WritingCenter,
 };
 
@@ -34,6 +32,8 @@ function initializeVueComponents() {
     }
   });
 };
+
+
 
 const sharedState = reactive({
   linkedEntryIds: []
