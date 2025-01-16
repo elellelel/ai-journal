@@ -99,8 +99,9 @@ export default {
     async fetchEntries(page) {
       try {
         this.isLoading = true;
+        const url = `/users/${window.currentUser}/entries?page=${page}`;
 
-        const response = await fetch(`users/${window.currentUser}/entries?page=${page}`, {
+        const response = await fetch(url, {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -126,8 +127,9 @@ export default {
       }
     },
     async fetchAllEntryIds() {
+      const url = `/users/${window.currentUser}/entry_ids`;
       try {
-        const response = await fetch(`users/${window.currentUser}/entry_ids`, {
+        const response = await fetch(url, {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -139,7 +141,7 @@ export default {
         }
 
         const data = await response.json();
-        this.allEntryIds = data.entry_ids || []; // Store all entry IDs
+        this.allEntryIds = data.entry_ids;
       } catch (error) {
         console.error("Error fetching all entry IDs:", error);
       }

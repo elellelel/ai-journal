@@ -22,7 +22,7 @@ global.fetch = vi.fn((url) => {
       json: () => Promise.resolve({ entry_ids: [1, 2] }),
     });
   }
-  return Promise.reject(new Error('Unknown URL'));
+  return Promise.reject(new Error(`UNKNOWN URL: ${url}`));
 });
 
 describe('EntriesTable', () => {
@@ -75,7 +75,7 @@ describe('EntriesTable', () => {
           json: () => Promise.resolve({ entry_ids: [1, 2] }),
         });
       }
-      return Promise.reject(new Error('Unknown URL'));
+      return Promise.reject(new Error(`UNKNOWN URL: ${url}`));
     });
 
     const wrapper = mount(EntriesTable, {
