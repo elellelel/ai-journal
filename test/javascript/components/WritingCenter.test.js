@@ -2,6 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import WritingCenter from "../../../app/javascript/components/WritingCenter.vue";
 import TinyMCEEditor from "../../../app/javascript/components/TinyMCEEditor.vue";
+import EntriesTable from "../../../app/javascript/components/EntriesTable.vue";
 
 describe("WritingCenter", () => {
   let fetchMock;
@@ -16,6 +17,9 @@ describe("WritingCenter", () => {
     meta.name = "csrf-token";
     meta.content = "test-csrf-token";
     document.head.appendChild(meta);
+
+    // Mock window.currentUser
+    global.window.currentUser = 1;
   });
 
   afterEach(() => {
@@ -24,6 +28,9 @@ describe("WritingCenter", () => {
     if (meta) {
       meta.remove();
     }
+
+    // Clean up global mocks
+    delete global.window.currentUser;
   });
 
   it("renders the form with initial data", () => {
@@ -53,7 +60,10 @@ describe("WritingCenter", () => {
   it("displays errors when submission fails", async () => {
     fetchMock.mockResolvedValueOnce({
       ok: false,
-      json: () => Promise.resolve({ errors: ["Title can't be blank", "Content is too short"] }),
+      json: () =>
+        Promise.resolve({
+          errors: ["Title can't be blank", "Content is too short"],
+        }),
     });
 
     const wrapper = mount(WritingCenter, {
@@ -95,45 +105,70 @@ describe("WritingCenter", () => {
     await wrapper.find("form").trigger("submit.prevent");
 
     // Check that fetch was called with the correct data
-    expect(fetchMock).toHaveBeenCalledWith(`/users/${window.currentUser}/entries`, expect.objectContaining({
-      method: "POST",
-      headers: expect.objectContaining({
-        "Content-Type": "application/json",
-        "X-CSRF-Token": "test-csrf-token",
-      }),
-      body: JSON.stringify({
-        entry: {
-          title: "New Title",
-          content: "New Content",
-          generate_ai_response: false,
-          linked_entry_ids: [],
-        },
-      }),
-    }));
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/users/1/entries",
+      expect.objectContaining({
+        method: "POST",
+        headers: expect.objectContaining({
+          "Content-Type": "application/json",
+          "X-CSRF-Token": "test-csrf-token",
+        }),
+        body: JSON.stringify({
+          entry: {
+            title: "New Title",
+            content: "New Content",
+            generate_ai_response: false,
+            linked_entry_ids: [],
+          },
+        }),
+      })
+    );
   });
 
-  it("toggles all linked entry selections", async () => {
+  it("toggles the EntriesTable visibility", async () => {
     const wrapper = mount(WritingCenter, {
       props: {
-        existingEntries: [
-          { id: 1, title: "Entry 1" },
-          { id: 2, title: "Entry 2" },
-        ],
+        existingEntries: [],
       },
     });
 
-    // Simulate checking the toggle all checkbox
-    const toggleCheckbox = { target: { checked: true } };
-    await wrapper.vm.toggleAllSelections(toggleCheckbox);
+    // Initially, the EntriesTable should not be visible
+    expect(wrapper.findComponent(EntriesTable).exists()).toBe(false);
 
-    // Check that all entry IDs are added to linked_entry_ids
-    expect(wrapper.vm.formData.linked_entry_ids).toEqual([1, 2]);
+    // Click the toggle link
+    await wrapper.find("a").trigger("click.prevent");
 
-    // Simulate unchecking the toggle all checkbox
-    const untoggleCheckbox = { target: { checked: false } };
-    await wrapper.vm.toggleAllSelections(untoggleCheckbox);
+    // Check that the EntriesTable is now visible
+    expect(wrapper.findComponent(EntriesTable).exists()).toBe(true);
 
-    // Check that linked_entry_ids is cleared
-    expect(wrapper.vm.formData.linked_entry_ids).toEqual([]);
+    // Click the toggle link again
+    await wrapper.find("a").trigger("click.prevent");
+
+    // Check that the EntriesTable is now hidden
+    expect(wrapper.findComponent(EntriesTable).exists()).toBe(false);
   });
+
+it("updates linked_entry_ids when entries are selected", async () => {
+  const wrapper = mount(WritingCenter, {
+    props: {
+      existingEntries: [],
+    },
+  });
+
+  // Ensure EntriesTable is visible
+  await wrapper.find("a").trigger("click.prevent");
+
+  // Find the EntriesTable component
+  const entriesTable = wrapper.findComponent(EntriesTable);
+
+  // Verify EntriesTable exists
+  expect(entriesTable.exists()).toBe(true);
+
+  // Simulate emitting selected entry IDs
+  await entriesTable.vm.$emit("update:modelValue", [1, 2]);
+
+  // Check that linked_entry_ids in formData is updated
+  expect(wrapper.vm.formData.linked_entry_ids).toEqual([1, 2]);
+});
+
 });
