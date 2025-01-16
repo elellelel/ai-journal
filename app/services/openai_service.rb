@@ -9,6 +9,14 @@ class OpenaiService
         ]
       }
     )
-    response["choices"].first["message"]["content"]
+
+    format_response(response["choices"].first["message"]["content"])
+  end
+
+  private
+
+  def self.format_response(response)
+    paragraphs = response.split("\n").reject(&:blank?)
+    response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
   end
 end

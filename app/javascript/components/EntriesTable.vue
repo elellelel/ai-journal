@@ -82,6 +82,8 @@ export default {
     allSelected() {
       // Check if all entries are selected
       return (
+        Array.isArray(this.allEntryIds) &&
+        Array.isArray(this.linkedEntryIds) &&
         this.allEntryIds.length > 0 &&
         this.linkedEntryIds.length === this.allEntryIds.length
       );
@@ -89,7 +91,8 @@ export default {
   },
   watch: {
     linkedEntryIds(newVal) {
-      this.sharedState.linkedEntryIds = newVal; // Sync with shared state
+      console.log('Watcher triggered with newVal:', newVal);
+      this.sharedState.linkedEntryIds = [...newVal]; // Sync with shared state
     },
   },
   methods: {
@@ -103,9 +106,6 @@ export default {
             Accept: "application/json",
           },
         });
-
-
-        console.log(response.ok);
 
         if (!response.ok) {
           throw new Error(`Failed to fetch entries: ${response.status}`);
@@ -139,7 +139,7 @@ export default {
         }
 
         const data = await response.json();
-        this.allEntryIds = data.entry_ids; // Store all entry IDs
+        this.allEntryIds = data.entry_ids || []; // Store all entry IDs
       } catch (error) {
         console.error("Error fetching all entry IDs:", error);
       }

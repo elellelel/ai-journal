@@ -57,6 +57,9 @@ group :development, :test do
   gem "pry"
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "factory_bot_rails"
+  gem "mocha"
 end
 
 group :development do

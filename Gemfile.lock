@@ -132,6 +132,11 @@ GEM
       tzinfo
     event_stream_parser (1.0.0)
     execjs (2.10.0)
+    factory_bot (6.5.0)
+      activesupport (>= 5.0.0)
+    factory_bot_rails (6.4.4)
+      factory_bot (~> 6.5)
+      railties (>= 5.0.0)
     faraday (2.12.2)
       faraday-net_http (>= 2.0, < 3.5)
       json
@@ -221,6 +226,8 @@ GEM
     mini_magick (4.13.2)
     mini_mime (1.1.5)
     minitest (5.25.4)
+    mocha (2.7.1)
+      ruby2_keywords (>= 0.0.5)
     msgpack (1.7.5)
     multipart-post (2.4.1)
     net-http (0.6.0)
@@ -368,6 +375,7 @@ GEM
     ruby-vips (2.2.2)
       ffi (~> 1.12)
       logger
+    ruby2_keywords (0.0.5)
     rubyzip (2.4.1)
     sass-embedded (1.83.1-aarch64-linux-gnu)
       google-protobuf (~> 4.29)
@@ -480,11 +488,13 @@ DEPENDENCIES
   dartsass-rails
   devise
   dotenv-rails
+  factory_bot_rails
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
   kamal
   kaminari
+  mocha
   pg
   propshaft
   pry

@@ -17,6 +17,16 @@ watch(content, (newValue) => {
   emit('update:modelValue', newValue); // Emit updates to the parent
 });
 
+// Watch for changes in the modelValue prop to sync with content
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    if (newValue !== content.value) {
+      content.value = newValue; // Update content when modelValue changes
+    }
+  }
+);
+
 // TinyMCE configuration
 const tinyMceConfig = {
   plugins: 'fullscreen lists link image table code help wordcount',

@@ -70,7 +70,7 @@ class EntriesController < ApplicationController
   # PATCH/PUT /entries/:id
   def update
     if @entry.update(entry_params)
-      redirect_to @entry, notice: 'Entry was successfully updated.'
+      redirect_to user_entry_path(current_user, @entry), notice: 'Entry was successfully updated.'
     else
       render :edit
     end

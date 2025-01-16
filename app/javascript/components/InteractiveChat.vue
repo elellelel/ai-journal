@@ -28,62 +28,63 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    sharedState: {
-      type: Object,
-      required: true
-    }
-  },
-  data() {
-    return {
-      chatInput: "", // To bind the input value
-      messages: [], // To store chat messages
-    };
-  },
-  computed: {
-    linkedEntryIds() {
-      return this.sharedState.linkedEntryIds;
-    }
-  },
-  methods: {
-    sendMessage() {
-      if (!this.chatInput.trim()) return;
+<script setup>
+import { ref, reactive, computed, onMounted } from "vue";
 
-      // Add user's message to chat
-      this.messages.push({ type: "user", content: this.chatInput });
+// Props
+const props = defineProps({
+  sharedState: {
+    type: Object,
+    required: true,
+  },
+});
 
-      const userMessage = this.chatInput; // Store input locally
-      this.chatInput = ""; // Clear input field
+// Reactive data
+const chatInput = ref("");
+const messages = reactive([]);
 
-      // Send the message to the server
-      fetch("/chats", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
-        },
-        body: JSON.stringify({ message: userMessage, linkedEntryIds: this.sharedState.linkedEntryIds }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // Add AI response to chat
-          this.messages.push({ type: "ai", content: data.message });
-          this.scrollToBottom();
-        })
-        .catch((error) => console.error("Error:", error));
+// Computed properties
+const linkedEntryIds = computed(() => props.sharedState.linkedEntryIds);
+
+// Methods
+const sendMessage = () => {
+  if (!chatInput.value.trim()) return;
+
+  // Add user's message to chat
+  messages.push({ type: "user", content: chatInput.value });
+
+  const userMessage = chatInput.value;
+  chatInput.value = ""; // Clear input field
+
+  // Send the message to the server
+  fetch("/chats", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
     },
-    scrollToBottom() {
-      const chatBox = this.$el.querySelector("#chat-box");
-      chatBox.scrollTop = chatBox.scrollHeight;
-    },
-  },
-  mounted() {
-    // Scroll to the bottom when the component is mounted
-    this.scrollToBottom();
-  },
+    body: JSON.stringify({ message: userMessage, linkedEntryIds: linkedEntryIds.value }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      // Add AI response to chat
+      messages.push({ type: "ai", content: data.message });
+      scrollToBottom();
+    })
+    .catch((error) => console.error("Error:", error));
 };
+
+const scrollToBottom = () => {
+  const chatBox = document.querySelector("#chat-box");
+  if (chatBox) {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+};
+
+// Lifecycle hook
+onMounted(() => {
+  scrollToBottom();
+});
 </script>
 
 <style>
