@@ -104,6 +104,6 @@ class EntriesController < ApplicationController
 
   # Strong parameters to permit attributes
   def entry_params
-    params.require(:entry).permit(:title, :content)
+    params.require(:entry).permit(:title, :content, :linked_entry_ids)
   end
 end

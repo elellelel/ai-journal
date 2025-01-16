@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, watch, reactive } from 'vue';
 import TinyMCEEditor from './TinyMCEEditor.vue';
 import EntriesTable from './EntriesTable.vue';
 
@@ -29,6 +29,14 @@ const props = defineProps({
 // Reactive data
 const formData = reactive({ ...props.initialEntryData });
 const errors = ref([]);
+
+// Watch for changes in linkedEntryIds and update formData.linked_entry_ids
+watch(linkedEntryIds, (newVal) => {
+  console.log("WritingCenter linkedEntryIds updated:", newVal);
+  // Ensure only entry IDs are passed
+  formData.linked_entry_ids = newVal.map((entry) => (typeof entry === "object" ? entry.id : entry));
+});
+
 
 // Methods
 const toggleEntriesTable = () => {
