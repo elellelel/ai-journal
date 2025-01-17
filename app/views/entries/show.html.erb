@@ -1,8 +1,11 @@
 <h1><%= @entry.title %></h1>
 
-<p><%= @entry.content %></p>
+<p><%= @entry.content.html_safe %></p>
 
-<p>Linked Entries: <%= @entry.linked_entry_ids.map(&:to_s) %></p>
+<% if Rails.env.development? %>
+	<p>Debug Info:</p>
+	<p>Linked Entries: <%= @entry.linked_entry_ids.map(&:to_s) %></p>
+<% end %>
 
 <% if @entry.ai_response.present? %>
 	<h1>AI Response:</h1>
