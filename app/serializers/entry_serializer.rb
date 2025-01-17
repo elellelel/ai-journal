@@ -2,10 +2,18 @@ class EntrySerializer < ActiveModel::Serializer
   attributes :id, :title, :content, :url, :editUrl
 
   def url
-    Rails.application.routes.url_helpers.user_entry_path(object.user_id, object)
+    if object.persisted?
+      Rails.application.routes.url_helpers.user_entry_path(object.user_id, object)
+    else
+      ''
+    end
   end
 
   def editUrl
-    Rails.application.routes.url_helpers.edit_user_entry_path(object.user_id, object)
+    if object.persisted?
+      Rails.application.routes.url_helpers.edit_user_entry_path(object.user_id, object)
+    else
+      ''
+    end
   end
 end
