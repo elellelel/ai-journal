@@ -97,18 +97,6 @@ const submitForm = async () => {
 
 <template>
   <div class="writing-center">
-    <!-- Toggle EntriesTable -->
-    <a href="#" @click.prevent="toggleEntriesTable">
-      {{ showEntriesTable ? "Hide previous entries" : "Attach previous entries" }}
-    </a>
-
-    <!-- Entries Table (conditionally rendered) -->
-    <EntriesTable
-      v-if="showEntriesTable"
-      v-model="entries"
-      :linked-entry-ids="linkedEntryIds"
-    />
-
     <!-- Form for AI Submissions -->
     <form @submit.prevent="submitForm">
       <!-- Error Messages -->
@@ -133,21 +121,6 @@ const submitForm = async () => {
 
       <!-- TinyMCE Editor -->
       <TinyMCEEditor v-model="formData.content" />
-
-      <!-- Generate AI Response -->
-      <div class="mb-3">
-        <div class="form-check">
-          <input
-            v-model="formData.generate_ai_response"
-            type="checkbox"
-            id="generateAIResponse"
-            class="form-check-input"
-          />
-          <label class="form-check-label" for="generateAIResponse">
-            Generate AI Response
-          </label>
-        </div>
-      </div>
 
       <!-- Submit Button -->
       <div class="mb-3">
