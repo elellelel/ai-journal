@@ -142,10 +142,14 @@ const fetchAllEntryIds = async () => {
 };
 
 const toggleSelectAll = () => {
+  console.log('Before toggling, allSelected:', allSelected.value);
   if (allSelected.value) {
-    store.dispatch('updateLinkedEntryIds', []); // Deselect all
+    console.log('Dispatching empty array to Vuex');
+    store.dispatch('updateLinkedEntryIds', []);
   } else {
-    store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]); // Select all
+    console.log('Dispatching all IDs to Vuex:', allEntryIds.value);
+    store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]);
+    console.log("Store Value", store.state.linkedEntryIds);
   }
 };
 
@@ -161,7 +165,10 @@ const handleScroll = debounce((event) => {
 
 // Lifecycle Hook
 onMounted(async () => {
+  console.log("Fetching initial entries...");
   await fetchEntries(currentPage.value); // Load initial entries
+  console.log("Fetching all entry IDs...");
   await fetchAllEntryIds(); // Fetch all entry IDs
+  console.log("Initial allEntryIds:", allEntryIds.value);
 });
 </script>

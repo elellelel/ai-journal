@@ -30,21 +30,15 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
+import { useStore } from "vuex";
 
-// Props
-const props = defineProps({
-  sharedState: {
-    type: Object,
-    required: true,
-  },
-});
+// Vuex Store
+const store = useStore();
+const linkedEntryIds = computed(() => store.state.linkedEntryIds);
 
 // Reactive data
 const chatInput = ref("");
 const messages = reactive([]);
-
-// Computed properties
-const linkedEntryIds = computed(() => props.sharedState.linkedEntryIds);
 
 // Methods
 const sendMessage = () => {
