@@ -1,3 +1,6 @@
+import Rails from "@rails/ujs";
+Rails.start();
+
 import { createApp, reactive, h } from "vue";
 
 import InteractiveChat from "../components/InteractiveChat.vue";
