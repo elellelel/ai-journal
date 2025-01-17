@@ -162,6 +162,7 @@ const handleScroll = debounce((event) => {
 
 // Lifecycle Hook
 onMounted(async () => {
+  entries.value = [];
   await fetchEntries(currentPage.value); // Load initial entries
   await fetchAllEntryIds(); // Fetch all entry IDs
 });
