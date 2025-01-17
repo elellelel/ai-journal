@@ -10,7 +10,11 @@ class OpenaiService
       }
     )
 
-    format_response(response["choices"].first["message"]["content"])
+    r = JSON.parse(response)
+    r = r["choices"].first
+    r = r["message"]["content"]
+
+    format_response(r)
   end
 
   private

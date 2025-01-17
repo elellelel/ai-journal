@@ -3,6 +3,11 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "mocha/minitest"
 require "minitest/mock"
+require 'capybara/rails'
+require 'capybara/minitest'
+require 'webmock/minitest'
+
+WebMock.disable_net_connect!(allow_localhost: true)
 
 module ActiveSupport
   class TestCase
