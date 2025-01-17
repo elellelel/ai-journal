@@ -4,6 +4,8 @@ import InteractiveChat from "../components/InteractiveChat.vue";
 import EntriesTable from "../components/EntriesTable.vue";
 import WritingCenter from "../components/WritingCenter.vue";
 
+import store from '../store';
+
 const components = {
   InteractiveChat,
   EntriesTable,
@@ -28,16 +30,11 @@ function initializeVueComponents() {
           break;
       }
 
+      app.use(store);
       app.mount(el);
     }
   });
 };
-
-
-
-const sharedState = reactive({
-  linkedEntryIds: []
-});
 
 function parseProps(props) {
   let parsedProps = {};
@@ -54,12 +51,11 @@ function createDefaultComponent(component, reactiveProps) {
   return createApp({
     setup() {
       return {
-        sharedState,
         props: reactiveProps,
       };
     },
     render() {
-      return h(component, { ...this.props, sharedState });
+      return h(component, { ...this.props });
     },
   });
 }
@@ -67,10 +63,9 @@ function createDefaultComponent(component, reactiveProps) {
 function createEntriesTable(reactiveProps) {
   return createApp({
     components: components, // Explicitly register component
-    template: `<EntriesTable v-model="entries" :shared-state="sharedState"/>`, // Why won't :is=> work here?
+    template: `<EntriesTable v-model="entries" />`, // Why won't :is=> work here?
     setup() {
       return {
-        sharedState,
         entries: reactiveProps.entries || [],
       };
     },

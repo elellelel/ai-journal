@@ -45,129 +45,123 @@
   </div>
 </template>
 
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue';
+import debounce from 'lodash.debounce';
+import { useStore } from 'vuex';
 
-<script>
-import debounce from "lodash.debounce";
+// Props
+const props = defineProps({
+  modelValue: {
+    type: Array,
+    required: true,
+  },
+});
 
-export default {
-  props: {
-    modelValue: {
-      type: Array,
-      required: true,
-    },
-    sharedState: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ["update:modelValue"],
-  data() {
-    return {
-      isLoading: false,
-      currentPage: 1,
-      hasMoreEntries: true,
-      linkedEntryIds: [],
-      allEntryIds: [], // Store all entry IDs
-    };
-  },
-  computed: {
-    entries: {
-      get() {
-        return this.modelValue;
+// Emits
+const emit = defineEmits(['update:modelValue']);
+
+// Vuex Store
+const store = useStore();
+const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+
+// Local State
+const isLoading = ref(false);
+const currentPage = ref(1);
+const hasMoreEntries = ref(true);
+const allEntryIds = ref([]);
+
+// Entries (computed from modelValue)
+const entries = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value),
+});
+
+// Computed Properties
+const allSelected = computed(() => {
+  return (
+    Array.isArray(allEntryIds.value) &&
+    Array.isArray(linkedEntryIds.value) &&
+    allEntryIds.value.length > 0 &&
+    linkedEntryIds.value.length === allEntryIds.value.length
+  );
+});
+
+// Methods
+const fetchEntries = async (page) => {
+  try {
+    isLoading.value = true;
+    const url = `/users/${window.currentUser}/entries?page=${page}`;
+
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
       },
-      set(value) {
-        this.$emit("update:modelValue", value);
-      },
-    },
-    allSelected() {
-      // Check if all entries are selected
-      return (
-        Array.isArray(this.allEntryIds) &&
-        Array.isArray(this.linkedEntryIds) &&
-        this.allEntryIds.length > 0 &&
-        this.linkedEntryIds.length === this.allEntryIds.length
-      );
-    },
-  },
-  watch: {
-    linkedEntryIds(newVal) {
-      console.log('Watcher triggered with newVal:', newVal);
-      this.sharedState.linkedEntryIds = [...newVal]; // Sync with shared state
-    },
-  },
-  methods: {
-    async fetchEntries(page) {
-      try {
-        this.isLoading = true;
-        const url = `/users/${window.currentUser}/entries?page=${page}`;
+    });
 
-        const response = await fetch(url, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch entries: ${response.status}`);
+    }
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch entries: ${response.status}`);
-        }
+    const data = await response.json();
 
-        const data = await response.json();
-
-        if (data.entries && data.entries.length) {
-          this.entries = [...this.entries, ...data.entries]; // Append new entries
-          this.currentPage = page; // Update current page
-        } else {
-          this.hasMoreEntries = false; // No more entries to load
-        }
-      } catch (error) {
-        console.error("Error fetching entries:", error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async fetchAllEntryIds() {
-      const url = `/users/${window.currentUser}/entry_ids`;
-      try {
-        const response = await fetch(url, {
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch all entry IDs: ${response.status}`);
-        }
-
-        const data = await response.json();
-        this.allEntryIds = data.entry_ids;
-      } catch (error) {
-        console.error("Error fetching all entry IDs:", error);
-      }
-    },
-    toggleSelectAll() {
-      if (this.allSelected) {
-        this.linkedEntryIds = []; // Deselect all
-      } else {
-        this.linkedEntryIds = [...this.allEntryIds]; // Select all
-      }
-    },
-    handleScroll: debounce(function (event) {
-      const container = event.target;
-
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
-        if (!this.isLoading && this.hasMoreEntries) {
-          this.fetchEntries(this.currentPage + 1);
-        }
-      }
-    }, 300),
-  },
-  async mounted() {
-    await this.fetchEntries(this.currentPage); // Load initial entries
-    await this.fetchAllEntryIds(); // Fetch all entry IDs
-  },
+    if (data.entries && data.entries.length) {
+      entries.value = [...entries.value, ...data.entries]; // Append new entries
+      currentPage.value = page; // Update current page
+    } else {
+      hasMoreEntries.value = false; // No more entries to load
+    }
+  } catch (error) {
+    console.error('Error fetching entries:', error);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
-</script>
+const fetchAllEntryIds = async () => {
+  try {
+    const url = `/users/${window.currentUser}/entry_ids`;
 
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch all entry IDs: ${response.status}`);
+    }
+
+    const data = await response.json();
+    allEntryIds.value = data.entry_ids;
+  } catch (error) {
+    console.error('Error fetching all entry IDs:', error);
+  }
+};
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    store.dispatch('updateLinkedEntryIds', []); // Deselect all
+  } else {
+    store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]); // Select all
+  }
+};
+
+const handleScroll = debounce((event) => {
+  const container = event.target;
+
+  if (container.scrollTop + container.clientHeight >= container.scrollHeight - 5) {
+    if (!isLoading.value && hasMoreEntries.value) {
+      fetchEntries(currentPage.value + 1);
+    }
+  }
+}, 300);
+
+// Lifecycle Hook
+onMounted(async () => {
+  await fetchEntries(currentPage.value); // Load initial entries
+  await fetchAllEntryIds(); // Fetch all entry IDs
+});
+</script>

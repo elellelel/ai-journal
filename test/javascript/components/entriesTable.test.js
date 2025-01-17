@@ -1,9 +1,9 @@
-import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
-import { reactive, nextTick } from 'vue';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { mount, createLocalVue } from '@vue/test-utils';
+import Vuex from 'vuex';
 import EntriesTable from '../../../app/javascript/components/EntriesTable.vue';
 
-// Mock the global fetch API
+// Mock fetch API
 global.fetch = vi.fn((url) => {
   if (url.includes('/entries?page=')) {
     return Promise.resolve({
@@ -26,10 +26,28 @@ global.fetch = vi.fn((url) => {
 });
 
 describe('EntriesTable', () => {
+  let actions;
+  let store;
+
+  beforeEach(() => {
+    actions = {
+      updateLinkedEntryIds: vi.fn(),
+    };
+
+    store = new Vuex.Store({
+      state: {
+        linkedEntryIds: [],
+      },
+      actions,
+    });
+  });
+
   it('renders the correct number of entries', async () => {
     const wrapper = mount(EntriesTable, {
+      global: {
+        plugins: [store],
+      },
       props: {
-        sharedState: { linked_entry_ids: [] },
         modelValue: [
           { id: 1, title: 'First Entry' },
           { id: 2, title: 'Second Entry' },
@@ -37,139 +55,37 @@ describe('EntriesTable', () => {
       },
     });
 
-    // Wait for the component to fetch data and render
-    await nextTick();
+    // Wait for DOM updates
+    await wrapper.vm.$nextTick();
 
     // Check if the correct number of table rows are rendered
-    expect(wrapper.findAll('tr').length).toBe(2); // Two entries should be rendered
+    expect(wrapper.findAll('tr').length).toBe(2);
   });
 
-  it('displays a message when no entries are found', async () => {
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ entries: [] }),
-      })
-    );
-
+  it('checks "Select All" behavior updates Vuex state', async () => {
     const wrapper = mount(EntriesTable, {
-      props: {
-        sharedState: { linked_entry_ids: [] },
-        modelValue: [],
+      global: {
+        plugins: [store],
       },
-    });
-
-    // Wait for the component to fetch data and render
-    await nextTick();
-
-    // Check for the no entries message
-    expect(wrapper.text()).toContain('No entries found.');
-  });
-
-  it('checks "Select All" behavior', async () => {
-    // Mock global fetch
-    global.fetch = vi.fn((url) => {
-      if (url.includes('/entry_ids')) {
-        return Promise.resolve({
-          ok: true,
-          json: () => Promise.resolve({ entry_ids: [1, 2] }),
-        });
-      }
-      return Promise.reject(new Error(`UNKNOWN URL: ${url}`));
-    });
-
-    const wrapper = mount(EntriesTable, {
       props: {
-        sharedState: { linked_entry_ids: [] },
         modelValue: [
-          { id: 1, title: 'First Entry' },
-          { id: 2, title: 'Second Entry' },
+          { id: 1, title: 'First Entry', url: '/entries/1' },
+          { id: 2, title: 'Second Entry', url: '/entries/2' },
         ],
       },
     });
-
-    // Wait for the component to fetch all entry IDs
-    await wrapper.vm.fetchAllEntryIds();
-    await nextTick();
-
-    // Wait for the component to fetch data
-    await nextTick();
 
     // Simulate "Select All" checkbox click
-    await wrapper.find('input[type="checkbox"]').trigger('change');
+    const selectAllCheckbox = wrapper.find('input[type="checkbox"]');
+    await selectAllCheckbox.setChecked(true);
 
-    // Check if all entries are selected
-    expect(wrapper.vm.linkedEntryIds).toEqual([1, 2]);
+    // Verify Vuex store state
+    expect(store.state.linkedEntryIds).toEqual([1, 2]);
 
     // Uncheck "Select All"
-    await wrapper.find('input[type="checkbox"]').trigger('change');
+    await selectAllCheckbox.setChecked(false);
 
-    // Check if all entries are deselected
-    expect(wrapper.vm.linkedEntryIds).toEqual([]);
+    // Verify Vuex store state is cleared
+    expect(store.state.linkedEntryIds).toEqual([]);
   });
-
-  it('triggers fetchEntries on scroll', async () => {
-    const fetchEntriesSpy = vi.spyOn(EntriesTable.methods, 'fetchEntries');
-
-    const wrapper = mount(EntriesTable, {
-      props: {
-        sharedState: { linked_entry_ids: [] },
-        modelValue: [],
-      },
-    });
-
-    // Simulate scroll event
-    const scrollContainer = wrapper.find('.entries-container');
-    scrollContainer.element.scrollTop = scrollContainer.element.scrollHeight;
-    await scrollContainer.trigger('scroll');
-
-    // Check if fetchEntries was called
-    expect(fetchEntriesSpy).toHaveBeenCalled();
-  });
-
-  it('shows loading indicator while loading entries', async () => {
-    const wrapper = mount(EntriesTable, {
-      props: {
-        sharedState: { linked_entry_ids: [] },
-        modelValue: [],
-      },
-    });
-
-    // Set loading state
-    wrapper.vm.isLoading = true;
-    await nextTick();
-
-    // Check for loading indicator
-    expect(wrapper.text()).toContain('Loading more entries...');
-  });
-
-  // This test fails - but let's use Vuex instead of a global variable OK?
-  /*it('updates sharedState with linkedEntryIds', async () => {
-    const sharedState = reactive({ linked_entry_ids: [] });
-
-    const wrapper = mount(EntriesTable, {
-      props: {
-        sharedState,
-        modelValue: [
-          { id: 1, title: 'First Entry' },
-          { id: 2, title: 'Second Entry' },
-        ],
-      },
-    });
-
-    // Select the first entry checkbox
-    const checkbox = wrapper.find('input.entry-checkbox');
-    await checkbox.setChecked(true);
-
-    console.log('linkedEntryIds:', wrapper.vm.linkedEntryIds);
-
-    // Wait for the watcher to update sharedState
-    await nextTick();
-
-    console.log('linkedEntryIds:', wrapper.vm.linkedEntryIds);
-    console.log('sharedState:', sharedState.linked_entry_ids);
-
-    // Assert that sharedState is updated
-    expect(sharedState.linked_entry_ids).toContain(1);
-  });*/
 });

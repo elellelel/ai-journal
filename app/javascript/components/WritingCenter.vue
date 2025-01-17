@@ -1,11 +1,14 @@
 <script setup>
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive, computed } from 'vue';
+import { useStore } from 'vuex';
 import TinyMCEEditor from './TinyMCEEditor.vue';
 import EntriesTable from './EntriesTable.vue';
 
+// Vuex store
+const store = useStore();
+const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+
 // Local state
-const linkedEntryIds = ref([]);
-const sharedState = { linked_entry_ids: linkedEntryIds.value };
 const message = ref('');
 const showEntriesTable = ref(false); // State to control visibility of EntriesTable
 
@@ -30,11 +33,10 @@ const props = defineProps({
 const formData = reactive({ ...props.initialEntryData });
 const errors = ref([]);
 
-// Watch for changes in linkedEntryIds and update formData.linked_entry_ids
+// Watch for changes in Vuex linkedEntryIds and update formData
 watch(linkedEntryIds, (newVal) => {
-  console.log("WritingCenter linkedEntryIds updated:", newVal);
-  // Ensure only entry IDs are passed
-  formData.linked_entry_ids = newVal.map((entry) => (typeof entry === "object" ? entry.id : entry));
+  console.log('Vuex linkedEntryIds updated:', newVal);
+  formData.linked_entry_ids = newVal;
 });
 
 
@@ -91,7 +93,6 @@ const submitForm = async () => {
     <EntriesTable
       v-if="showEntriesTable"
       v-model="linkedEntryIds"
-      :sharedState="sharedState"
     />
 
     <!-- Form for AI Submissions -->

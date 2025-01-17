@@ -1,10 +1,13 @@
+import { createStore } from 'vuex';
 import { mount } from "@vue/test-utils";
+import { nextTick } from "vue";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import WritingCenter from "../../../app/javascript/components/WritingCenter.vue";
 import TinyMCEEditor from "../../../app/javascript/components/TinyMCEEditor.vue";
 import EntriesTable from "../../../app/javascript/components/EntriesTable.vue";
 
 describe("WritingCenter", () => {
+  let store;
   let fetchMock;
 
   beforeEach(() => {
@@ -20,6 +23,25 @@ describe("WritingCenter", () => {
 
     // Mock window.currentUser
     global.window.currentUser = 1;
+
+    store = createStore({
+      state: {
+        linkedEntryIds: [],
+      },
+      mutations: {
+        SET_LINKED_ENTRY_IDS(state, ids) {
+          state.linkedEntryIds = ids;
+        },
+      },
+      actions: {
+        updateLinkedEntryIds({ commit }, ids) {
+          commit('SET_LINKED_ENTRY_IDS', ids);
+        },
+      },
+      getters: {
+        linkedEntryIds: (state) => state.linkedEntryIds,
+      },
+    });
   });
 
   afterEach(() => {
@@ -35,6 +57,9 @@ describe("WritingCenter", () => {
 
   it("renders the form with initial data", () => {
     const wrapper = mount(WritingCenter, {
+      global: {
+        plugins: [store],
+      },
       props: {
         existingEntries: [],
         initialEntryData: {
@@ -67,6 +92,9 @@ describe("WritingCenter", () => {
     });
 
     const wrapper = mount(WritingCenter, {
+      global: {
+        plugins: [store],
+      },
       props: {
         existingEntries: [],
       },
@@ -91,6 +119,9 @@ describe("WritingCenter", () => {
     });
 
     const wrapper = mount(WritingCenter, {
+      global: {
+        plugins: [store],
+      },
       props: {
         existingEntries: [],
       },
@@ -127,6 +158,9 @@ describe("WritingCenter", () => {
 
   it("toggles the EntriesTable visibility", async () => {
     const wrapper = mount(WritingCenter, {
+      global: {
+        plugins: [store],
+      },
       props: {
         existingEntries: [],
       },
@@ -148,27 +182,30 @@ describe("WritingCenter", () => {
     expect(wrapper.findComponent(EntriesTable).exists()).toBe(false);
   });
 
-it("updates linked_entry_ids when entries are selected", async () => {
-  const wrapper = mount(WritingCenter, {
-    props: {
-      existingEntries: [],
-    },
+  it('updates linked_entry_ids when entries are selected', async () => {
+    const wrapper = mount(WritingCenter, {
+      global: {
+        plugins: [store],
+      },
+      props: {
+        existingEntries: [],
+      },
+    });
+
+    // Ensure EntriesTable is visible
+    await wrapper.find('a').trigger('click.prevent');
+
+    // Find EntriesTable component
+    const entriesTable = wrapper.findComponent(EntriesTable);
+    expect(entriesTable.exists()).toBe(true);
+
+    // Emit updated entry IDs from EntriesTable
+    entriesTable.vm.$emit('update:modelValue', [1, 2]);
+
+    // Wait for Vuex store to update
+    await nextTick();
+
+    // Check Vuex store state for updates
+    expect(store.state.linkedEntryIds).toEqual([1, 2]);
   });
-
-  // Ensure EntriesTable is visible
-  await wrapper.find("a").trigger("click.prevent");
-
-  // Find the EntriesTable component
-  const entriesTable = wrapper.findComponent(EntriesTable);
-
-  // Verify EntriesTable exists
-  expect(entriesTable.exists()).toBe(true);
-
-  // Simulate emitting selected entry IDs
-  await entriesTable.vm.$emit("update:modelValue", [1, 2]);
-
-  // Check that linked_entry_ids in formData is updated
-  expect(wrapper.vm.formData.linked_entry_ids).toEqual([1, 2]);
-});
-
 });
