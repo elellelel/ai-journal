@@ -59,7 +59,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem "factory_bot_rails"
-  gem "mocha"
 end
 
 group :development do
@@ -71,6 +70,8 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  gem "mocha"
+  gem "webmock"
 end
 
 gem "webpacker", "~> 5.4"

@@ -1,20 +1,23 @@
 <template>
   <div>
     <!-- Select All Checkbox -->
-    <div>
-      <label>
-        <input
-          type="checkbox"
-          :checked="allSelected"
-          @change="toggleSelectAll"
-        />
-        Select All
-      </label>
+    <div class="container">
+      <div class="row">
+        <label>
+          <input
+            id="selectAll"
+            type="checkbox"
+            :checked="allSelected"
+            @change="toggleSelectAll"
+          />
+          Select All
+        </label>
+      </div>
     </div>
 
     <!-- Entries Table -->
     <div
-      class="entries-container"
+      class="container entries-container"
       @scroll.prevent="handleScroll"
       style="height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;"
     >

@@ -17,6 +17,7 @@
 
     <form @submit.prevent="sendMessage" class="d-flex">
       <input
+        id="chatInput"
         v-model="chatInput"
         type="text"
         class="form-control me-2"
