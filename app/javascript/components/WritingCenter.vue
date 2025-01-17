@@ -11,6 +11,7 @@ const linkedEntryIds = computed(() => store.state.linkedEntryIds);
 // Local state
 const message = ref('');
 const showEntriesTable = ref(false); // State to control visibility of EntriesTable
+const entries = ref([]);
 
 // Props
 const props = defineProps({
@@ -35,7 +36,7 @@ const errors = ref([]);
 
 // Watch for changes in Vuex linkedEntryIds and update formData
 watch(linkedEntryIds, (newVal) => {
-  console.log('Vuex linkedEntryIds updated:', newVal);
+  console.log('Vuex linkedEntryIds updated in the WritingCenter:', newVal);
   formData.linked_entry_ids = newVal;
 });
 
@@ -43,6 +44,18 @@ watch(linkedEntryIds, (newVal) => {
 // Methods
 const toggleEntriesTable = () => {
   showEntriesTable.value = !showEntriesTable.value; // Toggle visibility
+};
+
+const fetchEntries = async () => {
+  try {
+    const response = await fetch(`/users/${window.currentUser}/entries`);
+    const data = await response.json();
+    if (data.entries) {
+      entries.value = data.entries; // Update entries for the child component
+    }
+  } catch (error) {
+    console.error("Error fetching entries:", error);
+  }
 };
 
 const submitForm = async () => {
@@ -92,7 +105,8 @@ const submitForm = async () => {
     <!-- Entries Table (conditionally rendered) -->
     <EntriesTable
       v-if="showEntriesTable"
-      v-model="linkedEntryIds"
+      v-model="entries"
+      :linked-entry-ids="linkedEntryIds"
     />
 
     <!-- Form for AI Submissions -->

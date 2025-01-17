@@ -1,12 +1,38 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { nextTick } from "vue";
+import { createStore } from "vuex";
 import InteractiveChat from "../../../app/javascript/components/InteractiveChat.vue";
 
+const store = createStore({
+  state: {
+    linkedEntryIds: [],
+  },
+  mutations: {
+    SET_LINKED_ENTRY_IDS(state, ids) {
+      state.linkedEntryIds = ids;
+    },
+  },
+  actions: {
+    updateLinkedEntryIds({ commit }, ids) {
+      commit("SET_LINKED_ENTRY_IDS", ids);
+    },
+  },
+  getters: {
+    linkedEntryIds: (state) => state.linkedEntryIds,
+  },
+});
+
 describe("InteractiveChat", () => {
+  beforeEach(() => {
+    store.dispatch("updateLinkedEntryIds", []); // Reset store state before each test
+  });
+
   it("renders the chat box and input field", () => {
     const wrapper = mount(InteractiveChat, {
-      props: { sharedState: { linkedEntryIds: [] } },
+      global: {
+        plugins: [store],
+      },
     });
 
     // Check for chat box
@@ -20,7 +46,9 @@ describe("InteractiveChat", () => {
     vi.useFakeTimers();
 
     const wrapper = mount(InteractiveChat, {
-      props: { sharedState: { linkedEntryIds: [1, 2] } },
+      global: {
+        plugins: [store],
+      },
     });
 
     const input = wrapper.find("input[type='text']");
@@ -52,7 +80,9 @@ describe("InteractiveChat", () => {
 
   it("does not send an empty message", async () => {
     const wrapper = mount(InteractiveChat, {
-      props: { sharedState: { linkedEntryIds: [] } },
+      global: {
+        plugins: [store],
+      },
     });
 
     const form = wrapper.find("form");
@@ -69,7 +99,9 @@ describe("InteractiveChat", () => {
 
   it("scrolls to the bottom when a new message is added", async () => {
     const wrapper = mount(InteractiveChat, {
-      props: { sharedState: { linkedEntryIds: [] } },
+      global: {
+        plugins: [store],
+      },
     });
 
     // Add a new message
@@ -85,7 +117,9 @@ describe("InteractiveChat", () => {
 
   it("renders user and AI messages correctly", async () => {
     const wrapper = mount(InteractiveChat, {
-      props: { sharedState: { linkedEntryIds: [] } },
+      global: {
+        plugins: [store],
+      },
     });
 
     // Add messages

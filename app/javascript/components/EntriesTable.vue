@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import debounce from 'lodash.debounce';
 import { useStore } from 'vuex';
 
@@ -136,20 +136,17 @@ const fetchAllEntryIds = async () => {
 
     const data = await response.json();
     allEntryIds.value = data.entry_ids;
+
   } catch (error) {
     console.error('Error fetching all entry IDs:', error);
   }
 };
 
 const toggleSelectAll = () => {
-  console.log('Before toggling, allSelected:', allSelected.value);
   if (allSelected.value) {
-    console.log('Dispatching empty array to Vuex');
     store.dispatch('updateLinkedEntryIds', []);
   } else {
-    console.log('Dispatching all IDs to Vuex:', allEntryIds.value);
     store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]);
-    console.log("Store Value", store.state.linkedEntryIds);
   }
 };
 
@@ -165,10 +162,7 @@ const handleScroll = debounce((event) => {
 
 // Lifecycle Hook
 onMounted(async () => {
-  console.log("Fetching initial entries...");
   await fetchEntries(currentPage.value); // Load initial entries
-  console.log("Fetching all entry IDs...");
   await fetchAllEntryIds(); // Fetch all entry IDs
-  console.log("Initial allEntryIds:", allEntryIds.value);
 });
 </script>
