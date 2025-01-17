@@ -13,11 +13,11 @@ AI Journal is a web-based application designed to manage and enhance journal ent
 
 Ensure the following are installed on your system before running the application:
 
-- **Ruby**: Version specified in `.ruby-version`
-- **Rails**: ~6.1
-- **Node.js**: ~14.x or higher
+- **Ruby**: Version specified in `.ruby-version` (currently 3.4.1)
+- **Rails**: 8.0.1
+- **Node.js**: 18.x
 - **Yarn**: Package manager for Node.js dependencies
-- **PostgreSQL**: As the database
+- **SQLite3**: Database
 
 ## Setup Instructions
 
@@ -44,11 +44,12 @@ Ensure the following are installed on your system before running the application
      ```
 
 4. **Run the Application**:
-   - Start the Rails server:
+   - Start the required processes:
      ```bash
-     rails server
+     ./bin/dev
      ```
    - Visit the application at [http://localhost:3000](http://localhost:3000).
+   - See Procfile.dev for processes that run
 
 5. **Run Tests**:
    - Run Rails tests:
@@ -59,12 +60,16 @@ Ensure the following are installed on your system before running the application
      ```bash
      yarn test
      ```
+  - Run All tests:
+    ```bash
+    rake test:all 
+    ```
 
 ## Development Tools
 
 - **Frontend Framework**: Vue.js
 - **Backend Framework**: Ruby on Rails
-- **Database**: PostgreSQL
+- **Database**: SQLite3
 - **Testing**: Minitest (Rails) and Vitest (JavaScript)
 
 ## Contributing
