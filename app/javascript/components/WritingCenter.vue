@@ -62,10 +62,19 @@ const submitForm = async () => {
   errors.value = [];
 
   try {
-    const url = `/users/${window.currentUser}/entries`;
+    let url;
+    let method;
+    
+    if (props.initialEntryData.id) {
+      url = `/users/${window.currentUser}/entries/${props.initialEntryData.id}`;
+      method = 'PATCH';
+    } else {
+      method = 'POST';
+      url = `/users/${window.currentUser}/entries`;
+    }
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: method,
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json', // Explicitly set Accept header
@@ -83,7 +92,7 @@ const submitForm = async () => {
 
     if (data.entry && data.entry.id) {
       const entryId = data.entry.id;
-      // Redirect to the created entry's page
+      // Redirect to the entry's page
       window.location.href = `/users/${window.currentUser}/entries/${entryId}`;
     } else {
       throw ['Failed to retrieve the entry details for redirection.'];
