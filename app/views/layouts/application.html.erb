@@ -34,6 +34,8 @@
 
     </div>
 
+    <%= render 'layouts/footer' %>
+
     <script>
       window.currentUser = <%= current_user.id.to_json if current_user %>;
     </script>
