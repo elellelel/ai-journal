@@ -1,5 +1,5 @@
 class EntrySerializer < ActiveModel::Serializer
-  attributes :id, :title, :url, :editUrl
+  attributes :id, :title, :content, :url, :editUrl
 
   def url
     Rails.application.routes.url_helpers.user_entry_path(object.user_id, object)

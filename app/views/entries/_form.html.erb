@@ -1,1 +1,3 @@
-<div data-component="WritingCenter"></div>
+<div data-component="WritingCenter"
+     data-props="<%= json_escape({ initialEntryData: JSON.parse(ActiveModelSerializers::SerializableResource.new(@entry).to_json) }.to_json) %>">
+</div>

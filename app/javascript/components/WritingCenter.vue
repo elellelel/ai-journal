@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, reactive, computed } from 'vue';
+import { ref, watch, reactive, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 import TinyMCEEditor from './TinyMCEEditor.vue';
 import EntriesTable from './EntriesTable.vue';
@@ -36,7 +36,6 @@ const errors = ref([]);
 
 // Watch for changes in Vuex linkedEntryIds and update formData
 watch(linkedEntryIds, (newVal) => {
-  console.log('Vuex linkedEntryIds updated in the WritingCenter:', newVal);
   formData.linked_entry_ids = newVal;
 });
 
@@ -93,6 +92,10 @@ const submitForm = async () => {
     errors.value = error;
   }
 };
+
+onMounted(async() => {
+  console.log("Initial Entry:", props.initialEntryData);
+});
 </script>
 
 <template>
