@@ -10,7 +10,7 @@ class OpenaiService
       }
     )
 
-    r = JSON.parse(response)
+    r = response
     r = r["choices"].first
     r = r["message"]["content"]
 
