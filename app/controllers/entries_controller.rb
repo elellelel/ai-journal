@@ -70,9 +70,15 @@ class EntriesController < ApplicationController
   # PATCH/PUT /entries/:id
   def update
     if @entry.update(entry_params)
-      redirect_to user_entry_path(current_user, @entry), notice: 'Entry was successfully updated.'
+      respond_to do |format|
+        format.html { redirect_to user_entry_path(current_user, @entry), notice: 'Entry was successfully updated.' }
+        format.json { render json: { entry: { id: @entry.id, title: @entry.title } }, status: :ok}
+      end
     else
-      render :edit
+      respond_to do |format|
+        format.html { render :edit }
+        format.json { render json: { errors: @entry.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 
