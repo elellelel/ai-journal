@@ -36,7 +36,7 @@ const errors = ref([]);
 
 // Watch for changes in Vuex linkedEntryIds and update formData
 watch(linkedEntryIds, (newVal) => {
-  formData.linked_entry_ids = newVal;
+  formData.linked_entry_ids = [...newVal];
 });
 
 
@@ -101,10 +101,6 @@ const submitForm = async () => {
     errors.value = error;
   }
 };
-
-onMounted(async() => {
-  console.log("Initial Entry:", props.initialEntryData);
-});
 </script>
 
 <template>
@@ -133,6 +129,19 @@ onMounted(async() => {
 
       <!-- TinyMCE Editor -->
       <TinyMCEEditor v-model="formData.content" />
+
+      <!-- Generate AI Response Checkbox -->
+      <div class="mb-3 form-check">
+        <input
+          v-model="formData.generate_ai_response"
+          id="generateAIResponse"
+          type="checkbox"
+          class="form-check-input"
+        />
+        <label class="form-check-label" for="generateAIResponse">
+          Generate AI Response
+        </label>
+      </div>
 
       <!-- Submit Button -->
       <div class="mb-3">

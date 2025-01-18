@@ -1,5 +1,5 @@
 class EntrySerializer < ActiveModel::Serializer
-  attributes :id, :title, :content, :url, :editUrl
+  attributes :id, :title, :content, :linked_entry_ids, :url, :editUrl
 
   def url
     if object.persisted?

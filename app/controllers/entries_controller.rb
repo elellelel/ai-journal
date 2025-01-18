@@ -25,12 +25,29 @@ class EntriesController < ApplicationController
   # GET /entries/new
   def new
     @entry = current_user.entries.new
-    @existing_entries = current_user.entries
+    @existing_entries = current_user.entries.reject { |e| e.id.nil? }
+    @serialized_entries = ActiveModelSerializers::SerializableResource.new(@existing_entries)
   end
 
   # POST /entries
   def create   
     @entry = current_user.entries.new(entry_params)
+
+    if params[:entry][:linked_entry_ids]
+      @entry.linked_entry_ids = params[:entry][:linked_entry_ids].reject(&:blank?).map(&:to_i)
+    end
+
+    if params[:entry][:generate_ai_response]
+      # generate content from all included entries
+      content = EntryFeedCreator.new(@entry.linked_entry_ids).create_feed
+      response = OpenaiService.generate_response(content)
+      
+
+      paragraphs = response.split("\n").reject(&:blank?)
+      response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
+
+      @entry.ai_response = AiResponse.new(content: response)
+    end
 
     if @entry.save
       respond_to do |format|
@@ -38,7 +55,8 @@ class EntriesController < ApplicationController
         format.json { render json: { entry: { id: @entry.id, title: @entry.title } }, status: :created }
       end
     else
-      @existing_entries = Entry.all
+      @existing_entries = current_user.entries.reject { |e| e.id.nil? }
+      @serialized_entries = ActiveModelSerializers::SerializableResource.new(@existing_entries)
 
       respond_to do |format|
         format.html { render :new }
