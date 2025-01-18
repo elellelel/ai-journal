@@ -13,6 +13,12 @@
           AI: <span v-html="message.content"></span>
         </template>
       </div>
+
+      <!-- Loading Icon -->
+      <div v-if="isLoading" class="loading-icon text-center">
+        <span class="spinner-border" role="status" aria-hidden="true"></span>
+        <p>AI is thinking...</p>
+      </div>
     </div>
 
     <form @submit.prevent="sendMessage" class="d-flex">
@@ -40,6 +46,7 @@ const linkedEntryIds = computed(() => store.state.linkedEntryIds);
 // Reactive data
 const chatInput = ref("");
 const messages = reactive([]);
+const isLoading = ref(false); // State for loading icon
 
 // Methods
 const sendMessage = () => {
@@ -50,6 +57,8 @@ const sendMessage = () => {
 
   const userMessage = chatInput.value;
   chatInput.value = ""; // Clear input field
+
+  isLoading.value = true; // Show loading icon
 
   // Send the message to the server
   fetch("/chats", {
@@ -66,7 +75,10 @@ const sendMessage = () => {
       messages.push({ type: "ai", content: data.message });
       scrollToBottom();
     })
-    .catch((error) => console.error("Error:", error));
+    .catch((error) => console.error("Error:", error))
+    .finally(() => {
+      isLoading.value = false; // Hide loading icon
+    });
 };
 
 const scrollToBottom = () => {
