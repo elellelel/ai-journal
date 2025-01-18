@@ -1,5 +1,7 @@
-const { environment } = require('@rails/webpacker')
+const { environment } = require('@rails/webpacker');
 const webpack = require('webpack');
+const { VueLoaderPlugin } = require('vue-loader');
+const vue = require('./loaders/vue');
 
 // Access the resolve.alias property safely
 environment.config.merge({
@@ -19,17 +21,25 @@ environment.plugins.append(
   })
 );
 
-const { VueLoaderPlugin } = require('vue-loader')
-const vue = require('./loaders/vue')
-
-environment.plugins.prepend('VueLoaderPlugin', new VueLoaderPlugin())
+// Add VueLoaderPlugin and loader for .vue files
+environment.plugins.prepend('VueLoaderPlugin', new VueLoaderPlugin());
 environment.loaders.prepend('vue', {
-    test: /\.vue$/,
-    use: [{
-        loader: 'vue-loader'
-    }]
-})
+  test: /\.vue$/,
+  use: [
+    {
+      loader: 'vue-loader',
+      options: {
+        compilerOptions: {
+          isCustomElement: (tagName) => {
+            return tagName === 'vue-advanced-chat' || tagName === 'emoji-picker';
+          },
+        },
+      },
+    },
+  ],
+});
 
+// Babel loader for JS files
 environment.loaders.append('babel', {
   test: /\.js$/,
   exclude: /node_modules/,
@@ -38,4 +48,4 @@ environment.loaders.append('babel', {
   },
 });
 
-module.exports = environment
+module.exports = environment;

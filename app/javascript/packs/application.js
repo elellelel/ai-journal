@@ -4,12 +4,14 @@ Rails.start();
 import { createApp, reactive, h } from "vue";
 
 import InteractiveChat from "../components/InteractiveChat.vue";
+import AdvancedInteractiveChat from "../components/AdvancedInteractiveChat.vue";
 import EntriesTable from "../components/EntriesTable.vue";
 import WritingCenter from "../components/WritingCenter.vue";
 
 import store from '../store';
 
 const components = {
+  AdvancedInteractiveChat,
   InteractiveChat,
   EntriesTable,
   WritingCenter,
