@@ -28,6 +28,9 @@ module ActiveSupport
       ApplicationController.any_instance.stubs(:authenticate_user!).returns(true)
       user ||= create(:user)
       ApplicationController.any_instance.stubs(:current_user).returns(user)
+
+      # I would rather include the token in the tests... o_O
+      ApplicationController.any_instance.stubs(:verify_authenticity_token).returns(true)
     end
   end
 end

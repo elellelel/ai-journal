@@ -38,7 +38,8 @@ class EntriesControllerTest < ActionDispatch::IntegrationTest
   # CREATE
   test "should create entry (HTML)" do
     assert_difference("Entry.count", 1) do
-      post user_entries_url(@user), params: { entry: { title: "New Entry", content: "New Content" } }
+      post user_entries_url(@user),
+        params: { entry: { title: "New Entry", content: "New Content" } }
     end
     assert_redirected_to user_entry_url(@user, Entry.last)
     follow_redirect!

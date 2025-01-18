@@ -10,6 +10,11 @@ class OpenaiService
       }
     )
 
+    # this... is ONLY for test
+    if response.is_a?(String)
+      response = JSON.parse(response)
+    end
+
     r = response
     r = r["choices"].first
     r = r["message"]["content"]

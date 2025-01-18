@@ -29,24 +29,8 @@ class EntriesController < ApplicationController
   end
 
   # POST /entries
-  def create
+  def create   
     @entry = current_user.entries.new(entry_params)
-
-    if params[:entry][:linked_entry_ids]
-      @entry.linked_entry_ids = params[:entry][:linked_entry_ids].reject(&:blank?).map(&:to_i)
-    end
-
-    if params[:entry][:generate_ai_response]
-      # generate content from all included entries
-      content = EntryFeedCreator.new(current_user.entries).create_feed
-      response = OpenaiService.generate_response(content)
-      
-
-      paragraphs = response.split("\n").reject(&:blank?)
-      response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
-
-      @entry.ai_response = AiResponse.new(content: response)
-    end
 
     if @entry.save
       respond_to do |format|

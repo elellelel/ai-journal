@@ -28,7 +28,7 @@ class RootRedirectTest < ApplicationSystemTestCase
                     }
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").
-      with(body: request_body,).
+      with(body: JSON.parse(request_body)).
       to_return(status: 200, body: response_body.to_json, headers: {})
 
     sign_in(user)
