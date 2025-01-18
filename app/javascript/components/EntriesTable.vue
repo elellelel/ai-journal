@@ -8,7 +8,7 @@
             id="selectAll"
             type="checkbox"
             :checked="allSelected"
-            @change="toggleSelectAll"
+            @change.prevent="toggleSelectAll"
           />
           Select All
         </label>
@@ -30,6 +30,7 @@
                 :value="entry.id"
                 class="entry-checkbox"
                 v-model="linkedEntryIds"
+                @change.prevent="updateIndividualLinkedEntryId"
               />
             </td>
             <td>
@@ -67,6 +68,14 @@ const emit = defineEmits(['update:modelValue']);
 // Vuex Store
 const store = useStore();
 const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+
+const removeIdFromLinkedEntryIds = (id) => {
+  store.dispatch('removeIdFromLinkedEntryIds', id);
+};
+
+const addIdToLinkedEntryIds = (id) => {
+  store.dispatch('addIdToLinkedEntryIds', id);
+}
 
 // Local State
 const isLoading = ref(false);
@@ -150,6 +159,14 @@ const toggleSelectAll = () => {
     store.dispatch('updateLinkedEntryIds', []);
   } else {
     store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]);
+  }
+};
+
+const updateIndividualLinkedEntryId = (event) => {
+  if (store.state.linkedEntryIds.includes(event.target.value)) {
+    removeIdFromLinkedEntryIds(event.target.value);
+  } else {
+    addIdToLinkedEntryIds(event.target.value);
   }
 };
 
