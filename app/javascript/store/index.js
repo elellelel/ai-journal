@@ -12,7 +12,7 @@ const store = createStore({
       state.linkedEntryIds = state.linkedEntryIds.filter(entryId => entryId !== id);
     },
     ADD_ID_TO_LINKED_ENTRY_IDS(state, id) {
-      state.linkedEntryIds.push(id);
+      state.linkedEntryIds = [...state.linkedEntryIds, id];
     }
   },
   actions: {
