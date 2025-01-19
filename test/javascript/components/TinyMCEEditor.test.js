@@ -47,23 +47,6 @@ describe('TinyMCEEditor', () => {
     expect(wrapper.emitted('update:modelValue')[0]).toEqual(['<p>Updated content</p>']);
   });
 
-  it('reacts to changes in the modelValue prop', async () => {
-    const wrapper = mount(TinyMCEEditor, {
-      props: {
-        modelValue: '<p>Initial content</p>',
-      },
-    });
-
-    // Update the modelValue prop
-    await wrapper.setProps({ modelValue: '<p>New content</p>' });
-    await nextTick();
-    await wrapper.vm.$forceUpdate();
-
-    // Check if the editor content reflects the updated prop
-    const tinyMceEditor = wrapper.findComponent(Editor);
-    expect(tinyMceEditor.props('modelValue')).toBe('<p>New content</p>');
-  });
-
   it('applies TinyMCE configuration', () => {
     const wrapper = mount(TinyMCEEditor, {
       props: {

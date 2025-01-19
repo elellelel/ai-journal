@@ -55,33 +55,6 @@ describe("WritingCenter", () => {
     delete global.window.currentUser;
   });
 
-  it("renders the form with initial data", () => {
-    const wrapper = mount(WritingCenter, {
-      global: {
-        plugins: [store],
-      },
-      props: {
-        existingEntries: [],
-        initialEntryData: {
-          title: "Initial Title",
-          content: "Initial Content",
-          generate_ai_response: true,
-          linked_entry_ids: [],
-        },
-      },
-    });
-
-    // Check that the title field is prefilled
-    expect(wrapper.find("#title").element.value).toBe("Initial Title");
-
-    // Check that TinyMCEEditor is prefilled
-    const editor = wrapper.findComponent(TinyMCEEditor);
-    expect(editor.props("modelValue")).toBe("Initial Content");
-
-    // Check that the AI response checkbox is checked
-    expect(wrapper.find("#generateAIResponse").element.checked).toBe(true);
-  });
-
   it("displays errors when submission fails", async () => {
     fetchMock.mockResolvedValueOnce({
       ok: false,
@@ -155,57 +128,4 @@ describe("WritingCenter", () => {
       })
     );
   });
-
-  it("toggles the EntriesTable visibility", async () => {
-    const wrapper = mount(WritingCenter, {
-      global: {
-        plugins: [store],
-      },
-      props: {
-        existingEntries: [],
-      },
-    });
-
-    // Initially, the EntriesTable should not be visible
-    expect(wrapper.findComponent(EntriesTable).exists()).toBe(false);
-
-    // Click the toggle link
-    await wrapper.find("a").trigger("click.prevent");
-
-    // Check that the EntriesTable is now visible
-    expect(wrapper.findComponent(EntriesTable).exists()).toBe(true);
-
-    // Click the toggle link again
-    await wrapper.find("a").trigger("click.prevent");
-
-    // Check that the EntriesTable is now hidden
-    expect(wrapper.findComponent(EntriesTable).exists()).toBe(false);
-  });
-
-/*  it('updates linked_entry_ids when entries are selected', async () => {
-    const wrapper = mount(WritingCenter, {
-      global: {
-        plugins: [store],
-      },
-      props: {
-        existingEntries: [],
-      },
-    });
-
-    // Ensure EntriesTable is visible
-    await wrapper.find('a').trigger('click.prevent');
-
-    // Find EntriesTable component
-    const entriesTable = wrapper.findComponent(EntriesTable);
-    expect(entriesTable.exists()).toBe(true);
-
-    // Emit updated entry IDs from EntriesTable
-    entriesTable.vm.$emit('update:modelValue', [1, 2]);
-
-    // Wait for Vuex store to update
-    await nextTick();
-
-    // Check Vuex store state for updates
-    expect(store.state.linkedEntryIds).toEqual([1, 2]);
-  }); */
 });

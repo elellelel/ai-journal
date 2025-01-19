@@ -155,6 +155,7 @@ const fetchAllEntryIds = async () => {
 };
 
 const toggleSelectAll = () => {
+  console.log("toggleSelectAll triggered");
   if (allSelected.value) {
     store.dispatch('updateLinkedEntryIds', []);
   } else {
