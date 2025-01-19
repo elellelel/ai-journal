@@ -7,7 +7,10 @@
         :class="message.type === 'user' ? 'user-message mb-2' : 'ai-message mb-2'"
       >
         <template v-if="message.type === 'user'">
-          You: {{ message.content }}
+          You: {{ message.content }}<br />
+          <div v-if="message.linkedEntryIds.length > 0">
+            Attached: {{ message.linkedEntryIds }}
+          </div>
         </template>
         <template v-else>
           AI: <span v-html="message.content"></span>
@@ -53,7 +56,7 @@ const sendMessage = () => {
   if (!chatInput.value.trim()) return;
 
   // Add user's message to chat
-  messages.push({ type: "user", content: chatInput.value });
+  messages.push({ type: "user", content: chatInput.value, linkedEntryIds: [...linkedEntryIds.value] });
 
   const userMessage = chatInput.value;
   chatInput.value = ""; // Clear input field
