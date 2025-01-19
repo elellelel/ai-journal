@@ -131,7 +131,7 @@ const submitForm = async () => {
       <TinyMCEEditor v-model="formData.content" />
 
       <!-- Generate AI Response Checkbox -->
-      <div class="mb-3 form-check">
+      <div v-if="initialEntryData.id === null" class="mb-3 form-check">
         <input
           v-model="formData.generate_ai_response"
           id="generateAIResponse"
