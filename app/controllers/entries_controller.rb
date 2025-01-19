@@ -37,19 +37,20 @@ class EntriesController < ApplicationController
       @entry.linked_entry_ids = params[:entry][:linked_entry_ids].reject(&:blank?).map(&:to_i)
     end
 
-    if params[:entry][:generate_ai_response]
-      # generate content from all included entries
-      content = EntryFeedCreator.new(@entry.linked_entry_ids).create_feed
-      response = OpenaiService.generate_response(content)
-      
-
-      paragraphs = response.split("\n").reject(&:blank?)
-      response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
-
-      @entry.ai_response = AiResponse.new(content: response)
-    end
-
     if @entry.save
+      if params[:entry][:generate_ai_response]
+        # generate content from all included entries
+        content = EntryFeedCreator.new([@entry.id] + @entry.linked_entry_ids).create_feed
+
+        response = OpenaiService.generate_response(content)
+        
+
+        paragraphs = response.split("\n").reject(&:blank?)
+        response = paragraphs.map { |p| "<p>#{p.strip}</p>" }.join
+
+        @entry.ai_response = AiResponse.new(content: response)
+      end
+
       respond_to do |format|
         format.html { redirect_to user_entry_path(current_user, @entry), notice: 'Entry was successfully created.' }
         format.json { render json: { entry: { id: @entry.id, title: @entry.title } }, status: :created }

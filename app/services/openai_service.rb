@@ -1,6 +1,7 @@
 class OpenaiService
   def self.generate_response(prompt)
     client = OpenAI::Client.new
+    
     response = client.chat(
       parameters: {
         model: "gpt-4",
