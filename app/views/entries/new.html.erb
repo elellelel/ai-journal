@@ -1,5 +1,17 @@
 <h1>New Entry</h1>
 
-<%= render 'form', entry: @entry %>
+<div class="container">
+     <div class="row">
+          <div class="col-sm-4" 
+               data-component="EntriesTable" 
+               data-props="<%= json_escape({ entries: @serialized_entries }.to_json) %>">
+          </div>
+
+          <div class="col-sm-8"
+               data-component="WritingCenter"
+               data-props="<%= json_escape({ initialEntryData: JSON.parse(ActiveModelSerializers::SerializableResource.new(@entry).to_json) }.to_json) %>">
+          </div>
+     </div>
+</div>
 
 <%= link_to 'Back', root_path %>
