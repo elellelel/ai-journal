@@ -8,8 +8,13 @@
       >
         <template v-if="message.type === 'user'">
           You: {{ message.content }}<br />
-          <div v-if="message.linkedEntryIds.length > 0">
-            Attached: {{ message.linkedEntryIds }}
+          <div style="font-size: 0.8rem;" v-if="message.linkedEntries.length > 0">
+            Attached Entries:
+            <span v-for="entry in message.linkedEntries" :key="entry.id">
+              <a :href="entry.url" target="_blank" rel="noopener noreferrer">
+                {{ entry.title }}
+              </a>,&nbsp;
+            </span>
           </div>
         </template>
         <template v-else>
@@ -44,7 +49,7 @@ import { useStore } from "vuex";
 
 // Vuex Store
 const store = useStore();
-const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+const linkedEntries = computed(() => store.state.linkedEntries);
 
 // Reactive data
 const chatInput = ref("");
@@ -56,7 +61,11 @@ const sendMessage = () => {
   if (!chatInput.value.trim()) return;
 
   // Add user's message to chat
-  messages.push({ type: "user", content: chatInput.value, linkedEntryIds: [...linkedEntryIds.value] });
+  messages.push({
+    type: "user",
+    content: chatInput.value,
+    linkedEntries: Object.values(linkedEntries.value),
+  });
 
   const userMessage = chatInput.value;
   chatInput.value = ""; // Clear input field
@@ -70,7 +79,10 @@ const sendMessage = () => {
       "Content-Type": "application/json",
       "X-CSRF-Token": document.querySelector("[name='csrf-token']").content,
     },
-    body: JSON.stringify({ message: userMessage, linkedEntryIds: linkedEntryIds.value }),
+    body: JSON.stringify({
+      message: userMessage,
+      linkedEntries: Object.values(linkedEntries.value),
+    }),
   })
     .then((response) => response.json())
     .then((data) => {

@@ -29,7 +29,7 @@
                 type="checkbox"
                 :value="entry.id"
                 class="entry-checkbox"
-                v-model="linkedEntryIds"
+                :checked="!!linkedEntries[entry.id]"
                 @change.prevent="updateIndividualLinkedEntryId"
               />
             </td>
@@ -67,21 +67,21 @@ const emit = defineEmits(['update:modelValue']);
 
 // Vuex Store
 const store = useStore();
-const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+const linkedEntries = computed(() => store.state.linkedEntries);
 
-const removeIdFromLinkedEntryIds = (id) => {
-  store.dispatch('removeIdFromLinkedEntryIds', id);
-};
+const removeEntryFromLinkedEntries = (id) => {
+  store.dispatch('removeEntryFromLinkedEntries', id);
+}
 
-const addIdToLinkedEntryIds = (id) => {
-  store.dispatch('addIdToLinkedEntryIds', id);
+const addEntryToLinkedEntries = (entry) => {
+  store.dispatch('addEntryToLinkedEntries', entry);
 }
 
 // Local State
 const isLoading = ref(false);
 const currentPage = ref(1);
 const hasMoreEntries = ref(true);
-const allEntryIds = ref([]);
+const allEntries = ref([]);
 
 // Entries (computed from modelValue)
 const entries = computed({
@@ -92,10 +92,7 @@ const entries = computed({
 // Computed Properties
 const allSelected = computed(() => {
   return (
-    Array.isArray(allEntryIds.value) &&
-    Array.isArray(linkedEntryIds.value) &&
-    allEntryIds.value.length > 0 &&
-    linkedEntryIds.value.length === allEntryIds.value.length
+    Object.keys(linkedEntries.value).length === allEntries.value.length
   );
 });
 
@@ -131,9 +128,9 @@ const fetchEntries = async (page) => {
   }
 };
 
-const fetchAllEntryIds = async () => {
+const fetchAllEntries = async () => {
   try {
-    const url = `/users/${window.currentUser}/entry_ids`;
+    const url = `/users/${window.currentUser}/entries`;
 
     const response = await fetch(url, {
       headers: {
@@ -147,27 +144,30 @@ const fetchAllEntryIds = async () => {
     }
 
     const data = await response.json();
-    allEntryIds.value = data.entry_ids;
+    allEntries.value = data.entries;
 
   } catch (error) {
-    console.error('Error fetching all entry IDs:', error);
+    console.error('Error fetching all entries:', error);
   }
 };
 
 const toggleSelectAll = () => {
-  console.log("toggleSelectAll triggered");
   if (allSelected.value) {
-    store.dispatch('updateLinkedEntryIds', []);
+    store.dispatch('updateLinkedEntries', []);
   } else {
-    store.dispatch('updateLinkedEntryIds', [...allEntryIds.value]);
+    store.dispatch('updateLinkedEntries', [...allEntries.value]);
   }
 };
 
 const updateIndividualLinkedEntryId = (event) => {
-  if (store.state.linkedEntryIds.includes(event.target.value)) {
-    removeIdFromLinkedEntryIds(event.target.value);
+  const entryId = parseInt(event.target.value, 10);
+  if (store.state.linkedEntries[entryId]) {
+    store.dispatch('removeEntryFromLinkedEntries', entryId);
   } else {
-    addIdToLinkedEntryIds(event.target.value);
+    const entry = allEntries.value.find((e) => e.id === entryId);
+    if (entry) {
+      store.dispatch('addEntryToLinkedEntries', entry);
+    }
   }
 };
 
@@ -185,6 +185,6 @@ const handleScroll = debounce((event) => {
 onMounted(async () => {
   entries.value = [];
   await fetchEntries(currentPage.value); // Load initial entries
-  await fetchAllEntryIds(); // Fetch all entry IDs
+  await fetchAllEntries(); // Fetch all entry IDs
 });
 </script>

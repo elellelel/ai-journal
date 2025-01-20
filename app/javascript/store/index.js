@@ -2,32 +2,39 @@ import { createStore } from 'vuex';
 
 const store = createStore({
   state: {
-    linkedEntryIds: [], // Shared state for linked entries
+    linkedEntries: {}, // New
   },
   mutations: {
-    SET_LINKED_ENTRY_IDS(state, ids) {
-      state.linkedEntryIds = ids;
+    SET_LINKED_ENTRIES(state, entries) {
+      state.linkedEntries = entries.reduce((acc, entry) => {
+        acc[entry.id] = entry;
+        return acc;
+      }, {});
     },
-    REMOVE_ID_FROM_LINKED_ENTRY_IDS(state, id) {
-      state.linkedEntryIds = state.linkedEntryIds.filter(entryId => entryId !== id);
+    REMOVE_ENTRY_FROM_LINKED_ENTRIES(state, id) {
+      const { [id]: removed, ...remaining } = state.linkedEntries;
+      state.linkedEntries = remaining;
     },
-    ADD_ID_TO_LINKED_ENTRY_IDS(state, id) {
-      state.linkedEntryIds = [...state.linkedEntryIds, id];
-    }
+    ADD_ENTRY_TO_LINKED_ENTRIES(state, entry) {
+      state.linkedEntries = {
+        ...state.linkedEntries,
+        [entry.id]: entry,
+      };
+    },
   },
   actions: {
-    updateLinkedEntryIds({ commit }, ids) {
-      commit('SET_LINKED_ENTRY_IDS', ids);
+    updateLinkedEntries({ commit }, entries) {
+      commit('SET_LINKED_ENTRIES', entries);
     },
-    removeIdFromLinkedEntryIds({ commit }, id) {
-      commit('REMOVE_ID_FROM_LINKED_ENTRY_IDS', id);
+    removeEntryFromLinkedEntries({ commit }, id) {
+      commit('REMOVE_ENTRY_FROM_LINKED_ENTRIES', id);
     },
-    addIdToLinkedEntryIds({ commit }, id) {
-      commit('ADD_ID_TO_LINKED_ENTRY_IDS', id);
+    addEntryToLinkedEntries({ commit }, entry) {
+      commit('ADD_ENTRY_TO_LINKED_ENTRIES', entry);
     }
   },
   getters: {
-    linkedEntryIds: (state) => state.linkedEntryIds,
+    linkedEntries: (state) => state.linkedEntries
   },
 });
 

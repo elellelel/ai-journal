@@ -5,14 +5,22 @@ class EntriesController < ApplicationController
     user = User.find(params[:user_id]) if params[:user_id]
     user ||= current_user # Fallback to current_user if no user_id is passed
 
-    @entries = user.entries.page(params[:page]).per(10)
+    if params[:page]
+      @entries = user.entries.page(params[:page]).per(10)
+    else
+      @entries = user.entries 
+    end
+
     @serialized_entries = ActiveModelSerializers::SerializableResource.new(@entries)
 
+    response = {
+      entries: ActiveModelSerializers::SerializableResource.new(@entries)
+    }
+
+    response[:total_pages] = @entries.total_pages if params[:page]
+
     if request.format.json?
-      render json: {
-        entries: ActiveModelSerializers::SerializableResource.new(@entries),
-        total_pages: @entries.total_pages
-      }
+      render json: response
     else
       render :index
     end
