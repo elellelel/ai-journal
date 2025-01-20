@@ -6,7 +6,7 @@ import EntriesTable from './EntriesTable.vue';
 
 // Vuex store
 const store = useStore();
-const linkedEntryIds = computed(() => store.state.linkedEntryIds);
+const linkedEntries = computed(() => store.state.linkedEntries);
 
 // Local state
 const message = ref('');
@@ -34,9 +34,9 @@ const props = defineProps({
 const formData = reactive({ ...props.initialEntryData });
 const errors = ref([]);
 
-// Watch for changes in Vuex linkedEntryIds and update formData
-watch(linkedEntryIds, (newVal) => {
-  formData.linked_entry_ids = [...newVal];
+// Watch for changes in Vuex linkedEntries and update formData
+watch(linkedEntries, (newVal) => {
+  formData.linked_entry_ids = Object.keys(newVal);
 });
 
 

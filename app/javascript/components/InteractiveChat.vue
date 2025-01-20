@@ -13,7 +13,8 @@
             <span v-for="entry in message.linkedEntries" :key="entry.id">
               <a :href="entry.url" target="_blank" rel="noopener noreferrer">
                 {{ entry.title }}
-              </a>,&nbsp;
+              </a>
+              ,&nbsp;
             </span>
           </div>
         </template>
