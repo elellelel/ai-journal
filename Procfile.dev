@@ -1,5 +1,4 @@
 web: bin/rails server -p 3000
 css: bin/rails dartsass:watch
 js: bin/webpack-dev-server
-redis: redis-server
-sidekiq: bundle exec sidekiq
+jobs: bin/jobs start
