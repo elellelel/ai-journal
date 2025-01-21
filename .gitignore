@@ -44,3 +44,4 @@ ai_journal.zip
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+*.rdb
